@@ -1,0 +1,13 @@
+#! /bin/bash
+
+if [[ $1 = 'bash' ]]; then
+    exec /bin/bash
+fi
+
+if [[ "$APP_ENV" = "development" ]]; then
+#    python manage.py collectstatic --no-input
+    exec python manage.py runserver 0.0.0.0:8000
+else
+#    python manage.py collectstatic --no-input
+    exec uwsgi config/uwsgi.ini
+fi
