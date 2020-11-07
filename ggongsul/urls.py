@@ -18,6 +18,8 @@ from django.urls import path, include
 
 from ggongsul.member import views
 
+admin.autodiscover()
+admin.site.enable_nav_sidebar = False
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", views.home, name="home"),
