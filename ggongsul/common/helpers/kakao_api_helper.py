@@ -3,7 +3,7 @@ import requests
 from django.conf import settings
 from rest_framework import status
 
-from ggongsul.common import exceptions
+from ggongsul.core import exceptions
 
 
 class KakaoApiHelper:

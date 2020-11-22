@@ -1,7 +1,7 @@
 import logging
 
 from enum import Enum
-from ggongsul.common import exceptions
+from ggongsul.core import exceptions
 from django.http import QueryDict
 
 from ggongsul.common.helpers import KakaoApiHelper, NaverApiHelper

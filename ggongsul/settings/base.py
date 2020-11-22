@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "ggongsul.member",
+    "ggongsul.partner",
 ]
 
 MIDDLEWARE = [
@@ -130,3 +131,6 @@ STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
 # KAKAO_API_REDIRECT_URI = BASE_URL + '/account/login/kakao/'
+
+# for DRF settings
+REST_FRAMEWORK = {}

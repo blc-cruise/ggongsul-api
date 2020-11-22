@@ -8,7 +8,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from ggongsul.common import utils
-from ggongsul.common.exceptions import (
+from ggongsul.core.exceptions import (
     ValidationError,
     PasswordMismatch,
     NotAuthError,

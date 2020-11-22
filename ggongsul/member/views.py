@@ -9,7 +9,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 
 from ggongsul.member import services
-from ggongsul.common.decorators import api_status_response
+from ggongsul.core.decorators import api_status_response
 
 
 def home(request):
