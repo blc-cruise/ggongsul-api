@@ -19,7 +19,7 @@ LABEL maintainer="jaegeon <zezaeoh@gmail.com>"
 RUN ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 RUN chmod 777 /tmp
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        locales rdate openssl ca-certificates \
+        locales rdate openssl ca-certificates libxml2 libmariadb-dev \
     && localedef -f UTF-8 -i ko_KR ko_KR.UTF-8 \
     && rm -rf /var/lib/apt/lists/*
 

@@ -128,7 +128,7 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+STATIC_ROOT = os.path.join(BASE_DIR, "../", "static/")
 
 # KAKAO_API_REDIRECT_URI = BASE_URL + '/account/login/kakao/'
 
