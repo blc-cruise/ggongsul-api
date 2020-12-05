@@ -16,3 +16,9 @@ def render_image_form(serializer, template_pack=None):
 def render_field(field, style):
     renderer = style.get("renderer", ImageHTMLFormRenderer())
     return renderer.render_field(field, style)
+
+
+@register.filter(name="dict_key")
+def dict_key(d, k):
+    """Returns the given key from a dictionary."""
+    return d[k]

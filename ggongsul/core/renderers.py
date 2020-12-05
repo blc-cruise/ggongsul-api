@@ -13,7 +13,13 @@ class ImageHTMLFormRenderer(HTMLFormRenderer):
             if field._proxy_class is serializers.ImageField:
                 style = {"template": "image_input.html", "input_type": "file"}
             elif field._proxy_class is serializers.ChoiceField:
-                style = {"base_template": "radio.html"}
+                style = {"template": "radio_input.html"}
+                if field.name == "offer_type":
+                    style["choice_help_text"] = {
+                        1: "1회원 당, 술 1병 무료제공",
+                        2: "2회원 당, 술 1병 무료제공 (안주 가격이 평균 15,000원 이하인 매장만 권장드립니다.)",
+                        3: "전체 회원 인증 시, 술 무제한 제공 (홍보 효과가 가장 좋습니다. 안주로 승부하시는 매장에 추천드립니다.)",
+                    }
 
         if not style:
             style = self.default_style[field].copy()

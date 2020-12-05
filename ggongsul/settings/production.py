@@ -22,6 +22,8 @@ AWS_QUERYSTRING_AUTH = False
 # KAKAO_API_CLIENT_ID = ENV_CONFIG["kakao"]["client_id"]
 # KAKAO_API_CLIENT_SECRET = ENV_CONFIG["kakao"]["client_secret"]
 
+SLACK_WEBHOOK_URL = ENV_CONFIG["slack"]["webhook"]
+
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 

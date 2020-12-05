@@ -14,6 +14,7 @@ requests = "^2.24.0"
 django-storages = "^1.10.1"
 Pillow = "^8.0.1"
 boto3 = "^1.16.23"
+slack-sdk = "^3.1.0"
 
 [tool.poetry.dev-dependencies]
 

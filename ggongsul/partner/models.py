@@ -96,9 +96,9 @@ class PartnerDetailManager(models.Manager):
 
 class PartnerDetail(models.Model):
     class OfferType(models.IntegerChoices):
-        ONE_TO_ONE = 1, _("한 명당 한병 (1회원 당, 술 1병 무료제공)")
-        TWO_TO_ONE = 2, _("두 명당 한병 (2회원 당, 술 1병 무료제공)")
-        UNLIMITED = 3, _("무제한 제공 (전체 회원 인증 시, 술 무제한 제공)")
+        ONE_TO_ONE = 1, _("한 명당 한병")
+        TWO_TO_ONE = 2, _("두 명당 한병")
+        UNLIMITED = 3, _("무제한 제공")
 
     partner = models.OneToOneField(
         Partner, on_delete=models.CASCADE, related_name="detail", verbose_name=_("업체")

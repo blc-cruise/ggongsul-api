@@ -6,13 +6,10 @@
   <meta charset="UTF-8">
   <title>꽁술 파트너 신청하기</title>
 </head>
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"
-        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous"></script>
 <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
 <style>
     .total_div {
         max-width:700px;
@@ -39,6 +36,18 @@
     }
 
 </style>
+<script>
+function myFunction(t)
+{
+    if($(t).prev().val())
+    {
+        alert('Adding Succesful!')
+        return true;
+    }else{
+        return false;
+    }
+}
+</script>
 <body>
 <div class="total_div">
   <div>
@@ -58,7 +67,10 @@
   </div>
   <hr style="margin-top: 20px;">
   <div class="partner_info">
-    <form action="{% url 'partner-detail' %}?token={{ partner_detail.secret_token }}" method="POST" encType="multipart/form-data">
+    <form action="{% url 'partner-detail' %}?token={{ partner_detail.secret_token }}"
+          method="POST"
+          onsubmit="alert('등록/수정이 완료되었습니다.\n추후 수정할일 있으시면 언제든 해당 URL링크 클릭해서 변경해주세요 :)');"
+          encType="multipart/form-data">
       {% csrf_token %}
       {% for field in serializer %}
         {% if not field.read_only %}

@@ -10,7 +10,6 @@ from rest_framework.renderers import (
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import serializers
 
 from .models import PartnerDetail
 from .serializers import PartnerDetailSerializer
@@ -33,10 +32,6 @@ class PartnerDetailView(APIView):
             PartnerDetail, secret_token=secret_token
         )
         serializer = PartnerDetailSerializer(partner_detail)
-        logger.debug(partner_detail.img_main)
-        for field in serializer:
-            logger.debug(field.name)
-            logger.debug(field._proxy_class.__mro__)
 
         return Response(
             {
@@ -55,12 +50,14 @@ class PartnerDetailView(APIView):
             PartnerDetail, secret_token=secret_token
         )
         serializer = PartnerDetailSerializer(partner_detail, data=request.data)
-        logger.debug(request.data)
-        logger.debug(request.FILES)
 
         if not serializer.is_valid():
             return Response(
-                {"serializer": serializer, "partner_detail": partner_detail}
+                {
+                    "serializer": serializer,
+                    "partner_detail": partner_detail,
+                    "style": {"template_pack": "rest_framework/vertical"},
+                }
             )
         serializer.save()
 

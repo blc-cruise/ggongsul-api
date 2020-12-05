@@ -1,8 +1,11 @@
 import logging
+import time
+import traceback
 
 from functools import wraps
 
 from django.http import HttpResponse, QueryDict
+from requests.exceptions import ReadTimeout, ConnectTimeout
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -68,5 +71,26 @@ def api_status_response(func):
             return HttpResponse(
                 "서버에 오류가 발생했습니다.", status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+    return decorated
+
+
+def exponential_backoff_retry(func):
+    """
+    To retry a specific exception
+    """
+
+    @wraps(func)
+    def decorated(*args, **kwargs):
+        for i in range(6):
+            try:
+                return func(*args, **kwargs)
+            except (ReadTimeout, ConnectTimeout) as e:
+                # exponential backoff retry
+                time.sleep(pow(2, i))
+            except Exception as e:
+                traceback.print_exc()
+                raise e
+        raise Exception("ERROR: {} {}".format(func.__name__, "max retry over!!"))
 
     return decorated
