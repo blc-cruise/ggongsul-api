@@ -2,7 +2,10 @@ from .base import *
 
 import json
 
+DEBUG = False
 ALLOWED_HOSTS = "*"
+
+BASE_URL = "https://ggongsul.net"
 
 ENV_CONFIG_FILE = os.path.join(BASE_DIR, "settings/env_production.json")
 ENV_CONFIG = json.loads(open(ENV_CONFIG_FILE).read())

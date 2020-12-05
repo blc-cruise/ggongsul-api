@@ -16,12 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from ggongsul.member import views
-
 admin.autodiscover()
 admin.site.enable_nav_sidebar = False
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", views.home, name="home"),
     path("member/", include("ggongsul.member.urls")),
+    path("partner/", include("ggongsul.partner.urls")),
 ]

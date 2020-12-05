@@ -59,6 +59,7 @@ TEMPLATES = [
         ],
         "APP_DIRS": True,
         "OPTIONS": {
+            "libraries": {"ggongsul": "ggongsul.templatetags.ggongsul"},
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",

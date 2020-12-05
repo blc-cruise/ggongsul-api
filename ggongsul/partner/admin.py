@@ -15,4 +15,4 @@ class PartnerCategoryAdmin(admin.ModelAdmin):
 @admin.register(Partner)
 class PartnerAdmin(admin.ModelAdmin):
     inlines = [PartnerDetailInline]
-    list_display = ("name", "address", "contact_name")
+    list_display = ("name", "address", "contact_name", "detail_update_url")
