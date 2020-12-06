@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>꽁술 파트너 신청하기</title>
+</head>
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+<style>
+    .total_div {
+        max-width:700px;
+        margin:auto;
+        background: #f8f8f8;
+        font-family: 'Noto Sans KR', sans-serif;
+        min-height: 1000px;
+        padding: 30px 20px;
+    }
+
+    .title-head{
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    .sub-head{
+        font-size: 15px;
+        color: #aaaaaa;
+        margin-bottom: 30px;
+    }
+
+    .our_company_info {
+        margin: auto;
+    }
+
+</style>
+<body>
+<div class="total_div">
+  <div>
+    <div class="title-head">
+      {{ title }}
+    </div>
+    <div class="sub-head">
+      {{ sub_title }}
+    </div>
+    <div>
+      <a href="{{ url_path }}">정보 확인 및 변경 링크</a>
+    </div>
+  </div>
+  <hr style="margin-top: 20px;">
+  <div class="our_company_info">
+      상호 : 비엘씨컴퍼니 ｜ 대표이사 : 김지혜 ｜ 개인정보책임자 : 김지혜 <br>
+      소재지 : 서울시 강남구 역삼동 746-3<br>
+      사업자등록번호 : 401-65-00411 ｜ 통신판매번호 : 제 2020-서울강남-00990 호<br>
+      문의 : ggongsul.app@gmail.com<br>
+  </div>
+</div>
+
+</body>
+</html>

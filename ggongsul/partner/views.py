@@ -43,6 +43,7 @@ class PartnerDetailView(APIView):
 
     def post(self, request: Request):
         secret_token = request.query_params.get("token", None)
+
         if not secret_token:
             return HttpResponseBadRequest("there is no token!")
 
@@ -61,6 +62,11 @@ class PartnerDetailView(APIView):
             )
         serializer.save()
 
-        return HttpResponseRedirect(
-            resolve_url("partner-detail") + f"?token={partner_detail.secret_token}"
+        return Response(
+            {
+                "title": "등록/수정이 완료되었습니다 :)",
+                "sub_title": "* 추후 수정할일 있으시면 언제든 아래 URL링크 클릭해서 변경해주세요.",
+                "url_path": f"{resolve_url('partner-detail')}?token={partner_detail.secret_token}",
+            },
+            template_name="partner/okay.html",
         )
