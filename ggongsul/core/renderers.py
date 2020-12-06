@@ -1,3 +1,4 @@
+from django.shortcuts import resolve_url
 from django.template import loader
 from rest_framework import serializers
 from rest_framework.renderers import HTMLFormRenderer
@@ -20,6 +21,14 @@ class ImageHTMLFormRenderer(HTMLFormRenderer):
                         2: "2회원 당, 술 1병 무료제공 (안주 가격이 평균 15,000원 이하인 매장만 권장드립니다.)",
                         3: "전체 회원 인증 시, 술 무제한 제공 (홍보 효과가 가장 좋습니다. 안주로 승부하시는 매장에 추천드립니다.)",
                     }
+            elif (
+                field._proxy_class is serializers.BooleanField
+                and field.name.startswith("policy")
+            ):
+                style = {
+                    "template": "checkbox_input.html",
+                    "policy_url": f"{resolve_url('partner-agreement')}",
+                }
 
         if not style:
             style = self.default_style[field].copy()

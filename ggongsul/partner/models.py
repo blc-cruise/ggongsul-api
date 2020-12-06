@@ -6,7 +6,7 @@ import uuid
 
 from django.db import models
 from django.utils.deconstruct import deconstructible
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 # Create your models here.
@@ -230,6 +230,29 @@ class PartnerDetail(models.Model):
 
     def __str__(self):
         return self.partner.name + " 상세 정보"
+
+    def __repr__(self):
+        return self.__str__()
+
+
+class PartnerAgreement(models.Model):
+    partner = models.OneToOneField(
+        Partner,
+        on_delete=models.CASCADE,
+        related_name="agreement",
+        verbose_name=_("동의서"),
+    )
+    policy_agreed_at = models.DateTimeField(null=True, verbose_name=_("정책 동의 날짜"))
+
+    created_on = models.DateTimeField(auto_now_add=True, verbose_name=_("생성 날짜"))
+    updated_on = models.DateTimeField(auto_now=True, verbose_name=_("최근 정보 변경 날짜"))
+
+    class Meta:
+        verbose_name = _("이용약관 동의서")
+        verbose_name_plural = _("이용약관 동의서")
+
+    def __str__(self):
+        return self.partner.name + " 이용약관 동의서"
 
     def __repr__(self):
         return self.__str__()
