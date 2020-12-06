@@ -2,7 +2,10 @@ from .base import *
 
 import json
 
+DEBUG = False
 ALLOWED_HOSTS = "*"
+
+BASE_URL = "https://ggongsul.net"
 
 ENV_CONFIG_FILE = os.path.join(BASE_DIR, "settings/env_production.json")
 ENV_CONFIG = json.loads(open(ENV_CONFIG_FILE).read())
@@ -18,6 +21,8 @@ AWS_QUERYSTRING_AUTH = False
 
 # KAKAO_API_CLIENT_ID = ENV_CONFIG["kakao"]["client_id"]
 # KAKAO_API_CLIENT_SECRET = ENV_CONFIG["kakao"]["client_secret"]
+
+SLACK_WEBHOOK_URL = ENV_CONFIG["slack"]["webhook"]
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases

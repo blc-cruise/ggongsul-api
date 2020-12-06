@@ -59,6 +59,7 @@ TEMPLATES = [
         ],
         "APP_DIRS": True,
         "OPTIONS": {
+            "libraries": {"ggongsul": "ggongsul.templatetags.ggongsul"},
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
@@ -81,14 +82,21 @@ LOGGING = {
         "console": {
             "class": "logging.StreamHandler",
             "formatter": "ggongsul_console_log",
-        }
+        },
+        "slack": {
+            "level": "ERROR",
+            "filters": ["require_debug_false"],
+            "class": "ggongsul.common.loggers.SlackExceptionHandler",
+        },
     },
     "loggers": {
+        "django": {"handlers": ["slack"], "level": "INFO"},
         "ggongsul": {
             "handlers": ["console"],
             "level": "DEBUG",
         },
     },
+    "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
 }
 
 # Password validation

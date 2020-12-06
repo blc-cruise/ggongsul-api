@@ -7,3 +7,4 @@ docker-compose*
 static
 README.md
 LICENSE
+env_*.json

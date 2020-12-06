@@ -6,7 +6,7 @@ import uuid
 
 from django.db import models
 from django.utils.deconstruct import deconstructible
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 # Create your models here.
@@ -27,6 +27,8 @@ class PathAndRename:
 
 
 class Partner(models.Model):
+    detail: PartnerDetail
+
     name = models.CharField(max_length=32, verbose_name=_("업체 상호명"))
     address = models.CharField(max_length=128, verbose_name=_("업체 주소"))
     contact_name = models.CharField(max_length=16, verbose_name=_("대표 이름"))
@@ -47,6 +49,13 @@ class Partner(models.Model):
     def __repr__(self):
         return self.__str__()
 
+    def detail_update_url(self) -> str:
+        from django.conf import settings
+
+        return f"{settings.BASE_URL}/partner/detail?token={self.detail.secret_token}"
+
+    detail_update_url.short_description = "상세 정보 입력 url"
+
 
 class PartnerCategory(models.Model):
     name = models.CharField(
@@ -65,8 +74,8 @@ class PartnerCategory(models.Model):
         return self.__str__()
 
     class Meta:
-        verbose_name = _("카테고리")
-        verbose_name_plural = _("카테고리")
+        verbose_name = _("업체 분류")
+        verbose_name_plural = _("업체 분류")
 
 
 class PartnerDetailManager(models.Manager):
@@ -86,6 +95,11 @@ class PartnerDetailManager(models.Manager):
 
 
 class PartnerDetail(models.Model):
+    class OfferType(models.IntegerChoices):
+        ONE_TO_ONE = 1, _("한 명당 한병")
+        TWO_TO_ONE = 2, _("두 명당 한병")
+        UNLIMITED = 3, _("무제한 제공")
+
     partner = models.OneToOneField(
         Partner, on_delete=models.CASCADE, related_name="detail", verbose_name=_("업체")
     )
@@ -97,24 +111,42 @@ class PartnerDetail(models.Model):
         null=True,
         on_delete=models.SET_NULL,
         related_name="partners",
-        verbose_name=_("카테고리"),
+        verbose_name=_("매장 분류"),
         help_text=_("해당 업체의 카테고리입니다."),
     )
+    offer_type = models.IntegerField(
+        choices=OfferType.choices,
+        default=OfferType.ONE_TO_ONE,
+        verbose_name=_("술 제공 유형"),
+        help_text=_("추후 언제든지 변경 가능합니다."),
+    )
 
-    store_phone = models.CharField(max_length=16, verbose_name=_("매장 연락처"))
-    short_desc = models.CharField(max_length=64, verbose_name=_("한 줄 소개"))
-    detail_desc = models.TextField(verbose_name=_("상세 소개"))
+    store_phone = models.CharField(
+        max_length=16, verbose_name=_("매장 전화번호"), help_text=_("예) 02-1010-2020")
+    )
+    short_desc = models.CharField(
+        max_length=64,
+        verbose_name=_("간단 매장 설명"),
+        help_text=_("예) 벌집껍데기 구워주는 곳, 레트로 감성 맛집"),
+    )
+    detail_desc = models.TextField(
+        verbose_name=_("상세 매장 설명"),
+        help_text=_(
+            "예) 트랜디한 레트로감성 용범이네 인계동껍데기!! 벌집껍데기를 비롯하여 항정살껍데기가 추천메뉴(대표메뉴)입니다. "
+            "비빔국수와 함께 드시면 더욱더 환상적인 맛을 느끼실 수 있습니다."
+        ),
+    )
     ext_close_info = models.CharField(
         blank=True,
         null=True,
         max_length=128,
-        verbose_name=_("추가 휴무 정보"),
-        help_text=_("업체의 추가 휴무정보를 입력합니다."),
+        verbose_name=_("매장 추가 휴무 정보"),
+        help_text=_("예) 매주 월요일 휴무, 일요일 10시 마감"),
     )
-    open_time = models.DateTimeField(
+    open_time = models.TimeField(
         blank=True, null=True, default=None, verbose_name=_("오픈시간")
     )
-    end_time = models.DateTimeField(
+    end_time = models.TimeField(
         blank=True, null=True, default=None, verbose_name=_("마감시간")
     )
 
@@ -198,6 +230,29 @@ class PartnerDetail(models.Model):
 
     def __str__(self):
         return self.partner.name + " 상세 정보"
+
+    def __repr__(self):
+        return self.__str__()
+
+
+class PartnerAgreement(models.Model):
+    partner = models.OneToOneField(
+        Partner,
+        on_delete=models.CASCADE,
+        related_name="agreement",
+        verbose_name=_("동의서"),
+    )
+    policy_agreed_at = models.DateTimeField(null=True, verbose_name=_("정책 동의 날짜"))
+
+    created_on = models.DateTimeField(auto_now_add=True, verbose_name=_("생성 날짜"))
+    updated_on = models.DateTimeField(auto_now=True, verbose_name=_("최근 정보 변경 날짜"))
+
+    class Meta:
+        verbose_name = _("이용약관 동의서")
+        verbose_name_plural = _("이용약관 동의서")
+
+    def __str__(self):
+        return self.partner.name + " 이용약관 동의서"
 
     def __repr__(self):
         return self.__str__()

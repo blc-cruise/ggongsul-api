@@ -1,0 +1,21 @@
+<div class="form-group {% if field.errors %}has-error{% endif %}">
+  {% if field.label %}
+    <label {% if style.hide_label %}class="sr-only"{% endif %}>{{ field.label }}</label>
+  {% endif %}
+
+  <input name="{{ field.name }}" type="{{ style.input_type }}" {% if style.autofocus and style.input_type != "hidden" %}autofocus{% endif %}>
+
+  {% if field.errors %}
+    {% for error in field.errors %}
+      <span class="help-block">{{ error }}</span>
+    {% endfor %}
+  {% endif %}
+
+  {% if field.value %}
+  <span class="help-block">현재: <a href="{{ field.value }}">이미지 링크</a></span>
+  {% endif %}
+
+  {% if field.help_text %}
+    <span class="help-block">{{ field.help_text|safe }}</span>
+  {% endif %}
+</div>
