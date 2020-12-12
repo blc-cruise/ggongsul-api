@@ -19,8 +19,7 @@ AWS_STORAGE_BUCKET_NAME = ENV_CONFIG["aws"]["storage_bucket_name"]
 AWS_S3_REGION_NAME = ENV_CONFIG["aws"]["s3_region_name"]
 AWS_QUERYSTRING_AUTH = False
 
-# KAKAO_API_CLIENT_ID = ENV_CONFIG["kakao"]["client_id"]
-# KAKAO_API_CLIENT_SECRET = ENV_CONFIG["kakao"]["client_secret"]
+KAKAO_REST_API_KEY = ENV_CONFIG["kakao"]["rest_api_key"]
 
 SLACK_WEBHOOK_URL = ENV_CONFIG["slack"]["webhook"]
 

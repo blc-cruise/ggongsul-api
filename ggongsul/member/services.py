@@ -4,7 +4,8 @@ from enum import Enum
 from ggongsul.core import exceptions
 from django.http import QueryDict
 
-from ggongsul.common.helpers import KakaoApiHelper, NaverApiHelper
+from ggongsul.lib.helpers import NaverApiHelper
+from ggongsul.lib.kakao import KakaoLoginHelper
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +36,7 @@ def login(req_dict: QueryDict, login_type: LoginType = None):
 def _login_with_kakao(code: str, state: str):
     logger.debug(f"code: {code}")
     logger.debug(f"state: {state}")
-    user_info = KakaoApiHelper(code).get_user_info()
+    user_info = KakaoLoginHelper(code).get_user_info()
 
     logger.debug(f"user_info: {user_info}")
 

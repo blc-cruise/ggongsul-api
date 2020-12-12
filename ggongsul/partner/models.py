@@ -3,14 +3,20 @@ from __future__ import annotations
 import os
 import secrets
 import uuid
+import logging
 
 from django.db import models
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
 
+from django.db.models.functions import Radians, Power, Sin, Cos, ATan2, Sqrt, Radians
+from django.db.models import F
+
 
 # Create your models here.
 from ggongsul.core.exceptions import CommError
+
+logger = logging.getLogger(__name__)
 
 
 @deconstructible
@@ -28,6 +34,7 @@ class PathAndRename:
 
 class Partner(models.Model):
     detail: PartnerDetail
+    agreement: PartnerAgreement
 
     name = models.CharField(max_length=32, verbose_name=_("업체 상호명"))
     address = models.CharField(max_length=128, verbose_name=_("업체 주소"))
@@ -35,6 +42,13 @@ class Partner(models.Model):
     contact_phone = models.CharField(max_length=16, verbose_name=_("대표 연락처"))
 
     is_active = models.BooleanField(default=False, verbose_name=_("업체 활성화 여부"))
+
+    longitude = models.DecimalField(
+        max_digits=9, decimal_places=6, null=True, verbose_name=_("경도")
+    )
+    latitude = models.DecimalField(
+        max_digits=8, decimal_places=6, null=True, verbose_name=_("위도")
+    )
 
     created_on = models.DateTimeField(auto_now_add=True, verbose_name=_("생성 날짜"))
     updated_on = models.DateTimeField(auto_now=True, verbose_name=_("최근 정보 변경 날짜"))
@@ -49,12 +63,39 @@ class Partner(models.Model):
     def __repr__(self):
         return self.__str__()
 
+    @classmethod
+    def get_near_partners(
+        cls, lat: float, lng: float, num_km: int = 5, limit: int = 10
+    ):
+        dlat = Radians(F("latitude") - lat)
+        dlong = Radians(F("longitude") - lng)
+
+        a = Power(Sin(dlat / 2), 2) + Cos(Radians(lat)) * Cos(
+            Radians(F("latitude"))
+        ) * Power(Sin(dlong / 2), 2)
+
+        c = 2 * ATan2(Sqrt(a), Sqrt(1 - a))
+        d = 6371 * c
+
+        return (
+            cls.objects.annotate(distance=d)
+            .order_by("distance")
+            .filter(distance__lt=num_km)[:limit]
+        )
+
     def detail_update_url(self) -> str:
         from django.conf import settings
 
         return f"{settings.BASE_URL}/partner/detail?token={self.detail.secret_token}"
 
+    def policy_agree_yn(self) -> bool:
+        if not hasattr(self, "agreement"):
+            return False
+        return self.agreement.policy_agreed_at is not None
+
     detail_update_url.short_description = "상세 정보 입력 url"
+    policy_agree_yn.short_description = "이용약관 동의 여부"
+    policy_agree_yn.boolean = True
 
 
 class PartnerCategory(models.Model):

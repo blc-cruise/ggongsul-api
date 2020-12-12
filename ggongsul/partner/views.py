@@ -1,9 +1,13 @@
 import datetime
 import logging
+from typing import Optional
 
-from django.http import HttpResponseBadRequest, HttpResponseRedirect
+from django.http import HttpResponseBadRequest
 
 from django.shortcuts import get_object_or_404, resolve_url
+from rest_framework import permissions
+from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.renderers import (
     TemplateHTMLRenderer,
@@ -11,9 +15,16 @@ from rest_framework.renderers import (
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
-from .models import PartnerDetail, PartnerAgreement
-from .serializers import PartnerDetailSerializer, PartnerAgreementSerializer
+from .models import PartnerDetail, PartnerAgreement, Partner
+from .serializers import (
+    PartnerDetailSerializer,
+    PartnerAgreementSerializer,
+    PartnerMapInfoSerializer,
+    PartnerShortInfoSerializer,
+    PartnerDetailInfoSerializer,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -109,3 +120,43 @@ class PartnerAgreementView(APIView):
 
     def get(self, request: Request):
         return Response({})
+
+
+class PartnerViewSet(ReadOnlyModelViewSet):
+    queryset = Partner.objects.filter(is_active=True)
+    permission_classes = [permissions.AllowAny]
+
+    def get_serializer_class(self):
+        if self.action == "near_partners":
+            return PartnerShortInfoSerializer
+        elif self.action == "retrieve":
+            return PartnerDetailInfoSerializer
+        return PartnerMapInfoSerializer
+
+    @action(detail=False, methods=["get"], url_path="near")
+    def near_partners(self, request: Request):
+        lat: Optional[str] = request.query_params.get("lat", None)
+        lng: Optional[str] = request.query_params.get("lng", None)
+
+        if not lat or not lng:
+            raise ValidationError({"msg": "'lat' and 'lng' query params required!"})
+
+        if (
+            not lat.replace(".", "", 1).isnumeric()
+            or not lng.replace(".", "", 1).isnumeric()
+        ):
+            raise ValidationError(
+                {"msg": "'lat' and 'lng' query params should be float!"}
+            )
+
+        lat: float = float(lat)
+        lng: float = float(lng)
+
+        queryset = Partner.get_near_partners(float(lat), float(lng))
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)

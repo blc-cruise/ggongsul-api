@@ -24,7 +24,8 @@ SLACK_WEBHOOK_URL = ENV_CONFIG["slack"]["webhook"]
 
 # KAKAO_API_CLIENT_ID = ENV_CONFIG["kakao"]["client_id"]
 # KAKAO_API_CLIENT_SECRET = ENV_CONFIG["kakao"]["client_secret"]
-#
+KAKAO_REST_API_KEY = ENV_CONFIG["kakao"]["rest_api_key"]
+
 # NAVER_API_CLIENT_ID = ENV_CONFIG["naver"]["client_id"]
 # NAVER_API_CLIENT_SECRET = ENV_CONFIG["naver"]["client_secret"]
 
