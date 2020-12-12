@@ -19,4 +19,10 @@ class PartnerCategoryAdmin(admin.ModelAdmin):
 @admin.register(Partner)
 class PartnerAdmin(admin.ModelAdmin):
     inlines = [PartnerAgreementInline, PartnerDetailInline]
-    list_display = ("name", "address", "contact_name", "detail_update_url")
+    list_display = (
+        "name",
+        "address",
+        "contact_name",
+        "detail_update_url",
+        "policy_agree_yn",
+    )

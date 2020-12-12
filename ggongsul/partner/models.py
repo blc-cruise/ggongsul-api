@@ -28,6 +28,7 @@ class PathAndRename:
 
 class Partner(models.Model):
     detail: PartnerDetail
+    agreement: PartnerAgreement
 
     name = models.CharField(max_length=32, verbose_name=_("업체 상호명"))
     address = models.CharField(max_length=128, verbose_name=_("업체 주소"))
@@ -54,7 +55,14 @@ class Partner(models.Model):
 
         return f"{settings.BASE_URL}/partner/detail?token={self.detail.secret_token}"
 
+    def policy_agree_yn(self) -> bool:
+        if not hasattr(self, "agreement"):
+            return False
+        return self.agreement.policy_agreed_at is not None
+
     detail_update_url.short_description = "상세 정보 입력 url"
+    policy_agree_yn.short_description = "이용약관 동의 여부"
+    policy_agree_yn.boolean = True
 
 
 class PartnerCategory(models.Model):
