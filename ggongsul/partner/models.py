@@ -3,14 +3,20 @@ from __future__ import annotations
 import os
 import secrets
 import uuid
+import logging
 
 from django.db import models
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
 
+from django.db.models.functions import Radians, Power, Sin, Cos, ATan2, Sqrt, Radians
+from django.db.models import F
+
 
 # Create your models here.
 from ggongsul.core.exceptions import CommError
+
+logger = logging.getLogger(__name__)
 
 
 @deconstructible
@@ -56,6 +62,26 @@ class Partner(models.Model):
 
     def __repr__(self):
         return self.__str__()
+
+    @classmethod
+    def get_near_partners(
+        cls, lat: float, lng: float, num_km: int = 5, limit: int = 10
+    ):
+        dlat = Radians(F("latitude") - lat)
+        dlong = Radians(F("longitude") - lng)
+
+        a = Power(Sin(dlat / 2), 2) + Cos(Radians(lat)) * Cos(
+            Radians(F("latitude"))
+        ) * Power(Sin(dlong / 2), 2)
+
+        c = 2 * ATan2(Sqrt(a), Sqrt(1 - a))
+        d = 6371 * c
+
+        return (
+            cls.objects.annotate(distance=d)
+            .order_by("distance")
+            .filter(distance__lt=num_km)[:limit]
+        )
 
     def detail_update_url(self) -> str:
         from django.conf import settings

@@ -5,6 +5,6 @@ from ggongsul.partner import views as partner_views
 
 
 v1_router = DefaultRouter()
-v1_router.register("partners", partner_views.PartnerMapInfoViewSet)
+v1_router.register("partners", partner_views.PartnerViewSet)
 
 urlpatterns = [path("v1/", include(v1_router.urls))]
