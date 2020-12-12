@@ -1,9 +1,10 @@
 import datetime
 import logging
 
-from django.http import HttpResponseBadRequest, HttpResponseRedirect
+from django.http import HttpResponseBadRequest
 
 from django.shortcuts import get_object_or_404, resolve_url
+from rest_framework import permissions
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.renderers import (
     TemplateHTMLRenderer,
@@ -11,9 +12,14 @@ from rest_framework.renderers import (
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import ReadOnlyModelViewSet
 
-from .models import PartnerDetail, PartnerAgreement
-from .serializers import PartnerDetailSerializer, PartnerAgreementSerializer
+from .models import PartnerDetail, PartnerAgreement, Partner
+from .serializers import (
+    PartnerDetailSerializer,
+    PartnerAgreementSerializer,
+    PartnerMapInfoSerializer,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -109,3 +115,9 @@ class PartnerAgreementView(APIView):
 
     def get(self, request: Request):
         return Response({})
+
+
+class PartnerMapInfoViewSet(ReadOnlyModelViewSet):
+    queryset = Partner.objects.filter(is_active=True)
+    permission_classes = [permissions.AllowAny]
+    serializer_class = PartnerMapInfoSerializer

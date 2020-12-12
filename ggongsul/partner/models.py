@@ -37,6 +37,13 @@ class Partner(models.Model):
 
     is_active = models.BooleanField(default=False, verbose_name=_("업체 활성화 여부"))
 
+    longitude = models.DecimalField(
+        max_digits=9, decimal_places=6, null=True, verbose_name=_("경도")
+    )
+    latitude = models.DecimalField(
+        max_digits=8, decimal_places=6, null=True, verbose_name=_("위도")
+    )
+
     created_on = models.DateTimeField(auto_now_add=True, verbose_name=_("생성 날짜"))
     updated_on = models.DateTimeField(auto_now=True, verbose_name=_("최근 정보 변경 날짜"))
 

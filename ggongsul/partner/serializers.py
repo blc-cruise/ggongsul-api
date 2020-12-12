@@ -4,8 +4,7 @@ import logging
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 
-from .models import PartnerDetail, PartnerAgreement
-
+from .models import PartnerDetail, Partner
 
 logger = logging.getLogger(__name__)
 
@@ -32,3 +31,14 @@ class PartnerAgreementSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         pass
+
+
+class PartnerMapInfoSerializer(serializers.ModelSerializer):
+    offer_type = serializers.SerializerMethodField()
+
+    def get_offer_type(self, obj: Partner) -> int:
+        return obj.detail.offer_type
+
+    class Meta:
+        model = Partner
+        fields = ["id", "name", "longitude", "latitude", "offer_type"]

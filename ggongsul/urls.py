@@ -22,4 +22,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("member/", include("ggongsul.member.urls")),
     path("partner/", include("ggongsul.partner.urls")),
+    path("api/", include("ggongsul.api.urls")),
 ]
