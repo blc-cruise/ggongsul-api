@@ -13,10 +13,12 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 
 from pathlib import Path
+from django.contrib.admin import AdminSite
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 BASE_URL = "http://127.0.0.1:8000"
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
@@ -140,6 +142,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, "../", "static/")
 
 # KAKAO_API_REDIRECT_URI = BASE_URL + '/account/login/kakao/'
 
+AdminSite.enable_nav_sidebar = False
+AdminSite.site_header = "꽁술"
+AdminSite.site_title = "꽁술 관리자"
+AdminSite.index_title = "꽁술 대시보드"
 
 # for DRF settings
 REST_FRAMEWORK = {}
