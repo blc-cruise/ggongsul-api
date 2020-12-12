@@ -67,4 +67,5 @@ class PartnerAdmin(admin.ModelAdmin):
         "contact_name",
         "detail_update_url",
         "policy_agree_yn",
+        "is_active",
     )
