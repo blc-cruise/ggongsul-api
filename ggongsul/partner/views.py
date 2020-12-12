@@ -23,6 +23,7 @@ from .serializers import (
     PartnerAgreementSerializer,
     PartnerMapInfoSerializer,
     PartnerShortInfoSerializer,
+    PartnerDetailInfoSerializer,
 )
 
 logger = logging.getLogger(__name__)
@@ -126,8 +127,10 @@ class PartnerViewSet(ReadOnlyModelViewSet):
     permission_classes = [permissions.AllowAny]
 
     def get_serializer_class(self):
-        if self.action in ["near_partners", "retrieve"]:
+        if self.action == "near_partners":
             return PartnerShortInfoSerializer
+        elif self.action == "retrieve":
+            return PartnerDetailInfoSerializer
         return PartnerMapInfoSerializer
 
     @action(detail=False, methods=["get"], url_path="near")
