@@ -42,9 +42,11 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "ckeditor",
+    "django_filters",
     "ggongsul.member",
     "ggongsul.partner",
     "ggongsul.agreement",
+    "ggongsul.review",
 ]
 
 MIDDLEWARE = [

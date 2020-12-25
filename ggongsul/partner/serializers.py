@@ -75,6 +75,7 @@ class PartnerDetailInfoSerializer(serializers.ModelSerializer):
 
     img_store_list = serializers.SerializerMethodField(read_only=True)
     img_menu_list = serializers.SerializerMethodField(read_only=True)
+    img_price_list = serializers.SerializerMethodField(read_only=True)
 
     def get_img_store_list(self, obj: Partner) -> List[str]:
         img_store_list = []
@@ -110,6 +111,19 @@ class PartnerDetailInfoSerializer(serializers.ModelSerializer):
 
         return img_menu_list
 
+    def get_img_price_list(self, obj: Partner) -> List[str]:
+        img_price_list = []
+        detail = obj.detail
+
+        if detail.img_price_1:
+            img_price_list.append(detail.img_price_1.url)
+        if detail.img_price_2:
+            img_price_list.append(detail.img_price_2.url)
+        if detail.img_price_3:
+            img_price_list.append(detail.img_price_3.url)
+
+        return img_price_list
+
     class Meta:
         model = Partner
         fields = [
@@ -127,4 +141,5 @@ class PartnerDetailInfoSerializer(serializers.ModelSerializer):
             "store_phone",
             "img_store_list",
             "img_menu_list",
+            "img_price_list",
         ]

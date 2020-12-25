@@ -36,7 +36,7 @@ class LoginSerializer(APISerializer):
         except SocialAccount.DoesNotExist:
             raise AuthenticationFailed(_("해당 uid로 가입된 멤버가 없습니다."))
 
-        return {"member": MemberSerializer(sa.member).data, **sa.member.process_login()}
+        return sa.member.process_login()
 
 
 class SignupSerializer(APISerializer):
@@ -84,7 +84,7 @@ class SignupSerializer(APISerializer):
             provider=signup_type,
             adv_agree_yn=attrs["adv_agree_yn"],
         )
-        return {"member": MemberSerializer(m).data, **m.process_login()}
+        return m.process_login()
 
     @transaction.atomic
     def _create_social_account_member(
