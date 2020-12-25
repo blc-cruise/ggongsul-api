@@ -119,6 +119,12 @@ class SignupSerializer(APISerializer):
         return m
 
 
+class CheckUsernameSerializer(APISerializer):
+    username = serializers.CharField(
+        max_length=150, validators=[UniqueValidator(queryset=Member.objects.all())]
+    )
+
+
 class MemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = Member

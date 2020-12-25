@@ -9,4 +9,7 @@ v1_router = DefaultRouter()
 v1_router.register("partners", partner_views.PartnerViewSet)
 v1_router.register("agreements", agreement_views.AgreementViewSet)
 
-urlpatterns = [path("v1/", include(v1_router.urls))]
+
+urlpatterns = [
+    path("v1/", include(v1_router.urls)),
+]
