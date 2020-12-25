@@ -36,7 +36,7 @@ class LoginSerializer(APISerializer):
         except SocialAccount.DoesNotExist:
             raise AuthenticationFailed(_("해당 uid로 가입된 멤버가 없습니다."))
 
-        return sa.member.process_login()
+        return {"member": MemberSerializer(sa.member).data, **sa.member.process_login()}
 
 
 class SignupSerializer(APISerializer):

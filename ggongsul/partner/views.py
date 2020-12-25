@@ -1,6 +1,5 @@
 import datetime
 import logging
-from typing import Optional
 
 from django.http import HttpResponseBadRequest
 

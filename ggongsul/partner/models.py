@@ -9,7 +9,7 @@ from django.db import models
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
 
-from django.db.models.functions import Radians, Power, Sin, Cos, ATan2, Sqrt, Radians
+from django.db.models.functions import Power, Sin, Cos, ATan2, Sqrt, Radians
 from django.db.models import F
 
 

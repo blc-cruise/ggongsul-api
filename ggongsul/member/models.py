@@ -73,6 +73,10 @@ class MemberDetail(models.Model):
     def __repr__(self):
         return self.__str__()
 
+    class Meta:
+        verbose_name = _("사용자 상세 정보")
+        verbose_name_plural = _("사용자 상세 정보")
+
 
 class MemberAgreement(models.Model):
     member = models.OneToOneField(

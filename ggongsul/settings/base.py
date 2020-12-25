@@ -41,8 +41,10 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework_simplejwt",
+    "ckeditor",
     "ggongsul.member",
     "ggongsul.partner",
+    "ggongsul.agreement",
 ]
 
 MIDDLEWARE = [
