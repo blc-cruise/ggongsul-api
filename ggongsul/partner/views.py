@@ -1,6 +1,5 @@
 import datetime
 import logging
-from typing import Optional
 
 from django.http import HttpResponseBadRequest
 
@@ -25,6 +24,7 @@ from .serializers import (
     PartnerShortInfoSerializer,
     PartnerDetailInfoSerializer,
 )
+from ..core.validators import validate_dict_key
 
 logger = logging.getLogger(__name__)
 
@@ -135,11 +135,7 @@ class PartnerViewSet(ReadOnlyModelViewSet):
 
     @action(detail=False, methods=["get"], url_path="near")
     def near_partners(self, request: Request):
-        lat: Optional[str] = request.query_params.get("lat", None)
-        lng: Optional[str] = request.query_params.get("lng", None)
-
-        if not lat or not lng:
-            raise ValidationError({"msg": "'lat' and 'lng' query params required!"})
+        lat, lng = validate_dict_key(request.query_params, ["lat", "lng"])
 
         if (
             not lat.replace(".", "", 1).isnumeric()

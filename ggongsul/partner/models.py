@@ -9,7 +9,7 @@ from django.db import models
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
 
-from django.db.models.functions import Radians, Power, Sin, Cos, ATan2, Sqrt, Radians
+from django.db.models.functions import Power, Sin, Cos, ATan2, Sqrt, Radians
 from django.db.models import F
 
 
@@ -258,6 +258,24 @@ class PartnerDetail(models.Model):
         blank=True,
         upload_to=PathAndRename("/image/partner/"),
         verbose_name=_("업체 메뉴 사진 05"),
+    )
+    img_price_1 = models.ImageField(
+        null=True,
+        blank=True,
+        upload_to=PathAndRename("/image/partner/"),
+        verbose_name=_("업체 가격표(메뉴판) 사진 01"),
+    )
+    img_price_2 = models.ImageField(
+        null=True,
+        blank=True,
+        upload_to=PathAndRename("/image/partner/"),
+        verbose_name=_("업체 가격표(메뉴판) 사진 02"),
+    )
+    img_price_3 = models.ImageField(
+        null=True,
+        blank=True,
+        upload_to=PathAndRename("/image/partner/"),
+        verbose_name=_("업체 가격표(메뉴판) 사진 03"),
     )
 
     created_on = models.DateTimeField(auto_now_add=True, verbose_name=_("생성 날짜"))

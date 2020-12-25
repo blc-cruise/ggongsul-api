@@ -15,6 +15,9 @@ django-storages = "^1.10.1"
 Pillow = "^8.0.1"
 boto3 = "^1.16.23"
 slack-sdk = "^3.1.0"
+djangorestframework-simplejwt = "^4.6.0"
+django-ckeditor = "^6.0.0"
+django-filter = "^2.4.0"
 
 [tool.poetry.dev-dependencies]
 
