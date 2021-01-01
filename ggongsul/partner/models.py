@@ -78,7 +78,8 @@ class Partner(models.Model):
         d = 6371 * c
 
         return (
-            cls.objects.annotate(distance=d)
+            cls.objects.filter(is_active=True)
+            .annotate(distance=d)
             .order_by("distance")
             .filter(distance__lt=num_km)[:limit]
         )
@@ -301,7 +302,9 @@ class PartnerAgreement(models.Model):
         related_name="agreement",
         verbose_name=_("동의서"),
     )
-    policy_agreed_at = models.DateTimeField(null=True, verbose_name=_("정책 동의 날짜"))
+    policy_agreed_at = models.DateTimeField(
+        null=True, blank=True, verbose_name=_("정책 동의 날짜")
+    )
 
     created_on = models.DateTimeField(auto_now_add=True, verbose_name=_("생성 날짜"))
     updated_on = models.DateTimeField(auto_now=True, verbose_name=_("최근 정보 변경 날짜"))
