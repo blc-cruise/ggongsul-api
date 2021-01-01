@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
+from ggongsul.member.serializers import MemberSerializer
 from ggongsul.review.models import Review, ReviewImage
 
 
@@ -37,6 +38,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     images = UrlRelatedField(
         many=True, slug_field="image", queryset=ReviewImage.objects.all()
     )
+    member = MemberSerializer(read_only=True)
 
     def validate(self, attrs: dict):
         images: List[ReviewImage] = attrs["images"]
@@ -57,6 +59,7 @@ class ReviewSerializer(serializers.ModelSerializer):
             "rating_score",
             "body",
             "images",
+            "created_on",
         ]
 
 

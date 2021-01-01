@@ -46,7 +46,12 @@ class PartnerShortInfoSerializer(serializers.ModelSerializer):
     offer_type = serializers.IntegerField(source="detail.offer_type")
     short_desc = serializers.CharField(source="detail.short_desc")
     img_main = serializers.CharField(source="detail.img_main.url")
-    category = serializers.CharField(source="detail.category.name")
+    category = serializers.SerializerMethodField()
+
+    def get_category(self, obj: Partner):
+        if obj.detail.category is None:
+            return None
+        return obj.detail.category.name
 
     class Meta:
         model = Partner
