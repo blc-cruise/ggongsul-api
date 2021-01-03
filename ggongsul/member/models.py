@@ -21,6 +21,10 @@ class Member(AbstractUser):
         verbose_name = _("사용자")
         verbose_name_plural = _("사용자")
 
+    @property
+    def has_membership(self) -> bool:
+        return True
+
     def get_full_name(self):
         return self.username
 
