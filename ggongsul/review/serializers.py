@@ -8,6 +8,7 @@ from rest_framework.exceptions import ValidationError
 
 from ggongsul.member.serializers import MemberSerializer
 from ggongsul.review.models import Review, ReviewImage
+from ggongsul.visitation.models import Visitation
 
 
 class UrlRelatedField(serializers.RelatedField):
@@ -35,10 +36,43 @@ class UrlRelatedField(serializers.RelatedField):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    images = UrlRelatedField(
-        many=True, slug_field="image", queryset=ReviewImage.objects.all()
-    )
+    def validate(self, attrs: dict):
+        visitation: Visitation = attrs["visitation"]
+        partner = attrs["partner"]
+        member = attrs["member"]
+
+        if visitation.partner.pk != partner.pk or visitation.member.pk != member.pk:
+            raise ValidationError(_("데이터 정합성 검증에 실패하였습니다."))
+
+        return attrs
+
+    class Meta:
+        model = Review
+        fields = [
+            "id",
+            "member",
+            "partner",
+            "visitation",
+            "rating_score",
+            "body",
+            "images",
+        ]
+        extra_kwargs = {
+            "visitation": {"required": True, "allow_null": False},
+            "partner": {"required": True, "allow_null": False},
+            "member": {"required": True, "allow_null": False, "write_only": True},
+        }
+
+
+class ReviewInfoSerializer(serializers.ModelSerializer):
+    images = serializers.SerializerMethodField()
     member = MemberSerializer(read_only=True)
+
+    def get_images(self, obj: Review):
+        images = []
+        for img in obj.images.all():
+            images.append(img.image.url)
+        return images
 
     def validate(self, attrs: dict):
         images: List[ReviewImage] = attrs["images"]

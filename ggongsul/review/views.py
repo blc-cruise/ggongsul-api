@@ -6,7 +6,11 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from django_filters.rest_framework import DjangoFilterBackend
 
 from ggongsul.review.models import Review
-from ggongsul.review.serializers import ReviewSerializer, ReviewImageSerializer
+from ggongsul.review.serializers import (
+    ReviewInfoSerializer,
+    ReviewImageSerializer,
+    ReviewSerializer,
+)
 
 
 class ReviewViewSet(ModelViewSet):
@@ -18,7 +22,17 @@ class ReviewViewSet(ModelViewSet):
     def get_serializer_class(self):
         if self.action == "upload_image":
             return ReviewImageSerializer
-        return ReviewSerializer
+        if self.action in ["create", "update"]:
+            return ReviewSerializer
+        return ReviewInfoSerializer
+
+    def create(self, request: Request, *args, **kwargs):
+        request._full_data = {**request.data, "member": request.user.pk}
+        return super().create(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        request._full_data = {**request.data, "member": request.user.pk}
+        return super().update(request, *args, **kwargs)
 
     @action(detail=False, methods=["post"], url_path="upload-image")
     def upload_image(self, request: Request):

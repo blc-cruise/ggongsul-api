@@ -10,7 +10,8 @@ class VisitationSerializer(serializers.ModelSerializer):
         model = Visitation
         fields = ["id", "partner", "member"]
         extra_kwargs = {
-            "member": {"write_only": True},
+            "partner": {"required": True, "allow_null": False},
+            "member": {"required": True, "allow_null": False, "write_only": True},
         }
 
 
@@ -20,4 +21,4 @@ class VisitationInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Visitation
-        fields = ["member", "partner", "created_on"]
+        fields = ["member", "partner", "is_reviewed", "created_on"]

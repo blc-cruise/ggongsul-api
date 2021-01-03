@@ -25,6 +25,11 @@ class Visitation(models.Model):
     created_on = models.DateTimeField(auto_now_add=True, verbose_name=_("생성 날짜"))
     updated_on = models.DateTimeField(auto_now=True, verbose_name=_("최근 정보 변경 날짜"))
 
+    def is_reviewed(self) -> bool:
+        if hasattr(self, "review") and self.review is not None:
+            return True
+        return False
+
     class Meta:
         ordering = ["-created_on"]
         verbose_name = _("방문 기록")
