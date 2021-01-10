@@ -27,11 +27,9 @@ class ReviewViewSet(ModelViewSet):
         return ReviewInfoSerializer
 
     def create(self, request: Request, *args, **kwargs):
-        request._full_data = {**request.data, "member": request.user.pk}
         return super().create(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
-        request._full_data = {**request.data, "member": request.user.pk}
         return super().update(request, *args, **kwargs)
 
     @action(detail=False, methods=["post"], url_path="upload-image")

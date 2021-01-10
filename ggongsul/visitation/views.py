@@ -1,8 +1,7 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import mixins, status
+from rest_framework import mixins
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
-from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from ggongsul.core.authentications import MembershipAuthentication
@@ -34,5 +33,4 @@ class VisitationViewSet(
         return VisitationInfoSerializer
 
     def create(self, request: Request, *args, **kwargs):
-        request._full_data = {**request.data, "member": request.user.pk}
         return super().create(request, *args, **kwargs)

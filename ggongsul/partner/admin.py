@@ -63,6 +63,7 @@ class PartnerAdmin(admin.ModelAdmin):
     exclude = ("longitude", "latitude")
     list_display = (
         "name",
+        "id",
         "address",
         "contact_name",
         "detail_update_url",

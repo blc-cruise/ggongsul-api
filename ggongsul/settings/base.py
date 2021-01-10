@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "ggongsul.agreement",
     "ggongsul.review",
     "ggongsul.visitation",
+    "ggongsul.membership",
 ]
 
 MIDDLEWARE = [

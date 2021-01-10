@@ -129,5 +129,10 @@ class MemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = Member
         fields = [
+            "id",
             "username",
+            "is_membership_activated",
+            "total_membership_days",
+            "total_visitation_cnt",
+            "next_membership_payment",
         ]

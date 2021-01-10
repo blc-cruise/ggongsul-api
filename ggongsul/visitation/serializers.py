@@ -6,6 +6,10 @@ from ggongsul.visitation.models import Visitation
 
 
 class VisitationSerializer(serializers.ModelSerializer):
+    def validate(self, attrs: dict):
+        attrs["member"] = self.context["request"].user
+        return attrs
+
     class Meta:
         model = Visitation
         fields = ["id", "partner", "member"]
@@ -21,4 +25,4 @@ class VisitationInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Visitation
-        fields = ["member", "partner", "is_reviewed", "created_on"]
+        fields = ["id", "member", "partner", "is_reviewed", "created_on"]

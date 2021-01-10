@@ -9,7 +9,7 @@ from ggongsul.member.models import Member
 class MembershipAuthentication(JWTAuthentication):
     def get_user(self, validated_token):
         user: Member = super().get_user(validated_token)
-        if not user.has_membership:
+        if not user.has_membership_benefits:
             raise AuthenticationFailed(
                 _("멤버십에 가입한 멤버가 아닙니다."), code="has_not_membership"
             )

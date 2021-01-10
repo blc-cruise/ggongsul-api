@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Optional
 
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from ggongsul.core import exceptions
+from ggongsul.lib.iamport import IMPHelper
 from ggongsul.lib.kakao import KakaoLoginHelper
 
 
@@ -22,8 +23,48 @@ class Member(AbstractUser):
         verbose_name_plural = _("사용자")
 
     @property
-    def has_membership(self) -> bool:
-        return True
+    def has_membership_benefits(self) -> bool:
+        cur_datetime = timezone.now()
+        return self.subscriptions.filter(ended_at__gt=cur_datetime).exists()
+
+    @property
+    def is_billing_key_exist(self) -> bool:
+        imp_client = IMPHelper()
+        return imp_client.is_customer_uid_exist(self.billing_key)
+
+    @property
+    def is_membership_activated(self) -> bool:
+        if not hasattr(self, "membership"):
+            return False
+        return self.membership.is_active
+
+    @property
+    def next_membership_payment(self) -> Optional[str]:
+        if not hasattr(self, "membership"):
+            return None
+        if not self.membership.is_active:
+            return None
+        sub = self.subscriptions.latest("-ended_at")
+        return sub.ended_at.strftime("%Y년 %m월 %d일")
+
+    @property
+    def total_membership_days(self) -> int:
+        cur_datetime = timezone.now()
+        if not hasattr(self, "membership"):
+            return 0
+        if not self.membership.is_active:
+            return 0
+        if not self.membership.last_activated_at:
+            return 0
+        return (cur_datetime - self.membership.last_activated_at).days
+
+    @property
+    def total_visitation_cnt(self) -> int:
+        return len(self.visitations.all())
+
+    @property
+    def billing_key(self) -> str:
+        return f"ggongsul-{self.id}"
 
     def get_full_name(self):
         return self.username

@@ -1,6 +1,5 @@
 from typing import List
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
@@ -11,35 +10,11 @@ from ggongsul.review.models import Review, ReviewImage
 from ggongsul.visitation.models import Visitation
 
 
-class UrlRelatedField(serializers.RelatedField):
-    default_error_messages = {
-        "does_not_exist": _('Invalid pk "{pk_value}" - object does not exist.'),
-        "incorrect_type": _("Incorrect type. Expected pk value, received {data_type}."),
-    }
-
-    def __init__(self, slug_field=None, **kwargs):
-        assert slug_field is not None, "The `slug_field` argument is required."
-        self.slug_field = slug_field
-        super().__init__(**kwargs)
-
-    def to_internal_value(self, data):
-        queryset = self.get_queryset()
-        try:
-            return queryset.get(pk=data)
-        except ObjectDoesNotExist:
-            self.fail("does_not_exist", pk_value=data)
-        except (TypeError, ValueError):
-            self.fail("incorrect_type", data_type=type(data).__name__)
-
-    def to_representation(self, obj):
-        return getattr(obj, self.slug_field).url
-
-
 class ReviewSerializer(serializers.ModelSerializer):
     def validate(self, attrs: dict):
         visitation: Visitation = attrs["visitation"]
         partner = attrs["partner"]
-        member = attrs["member"]
+        member = attrs["member"] = self.context["request"].user
 
         if visitation.partner.pk != partner.pk or visitation.member.pk != member.pk:
             raise ValidationError(_("데이터 정합성 검증에 실패하였습니다."))
