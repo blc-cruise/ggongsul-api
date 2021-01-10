@@ -11,7 +11,7 @@ from ggongsul.lib.iamport import IMPHelper
 from ggongsul.member.models import Member
 
 
-class MemberShip(models.Model):
+class Membership(models.Model):
     MEMBERSHIP_PRICE = 4900
 
     member = models.OneToOneField(
@@ -61,7 +61,7 @@ class MemberShip(models.Model):
             Payment.create_payment(
                 subscription=sub,
                 name="꽁술 멤버십 구독 결제",
-                amount=MemberShip.MEMBERSHIP_PRICE,
+                amount=Membership.MEMBERSHIP_PRICE,
                 billing_key=self.member.billing_key,
             )
 

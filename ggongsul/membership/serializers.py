@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework.exceptions import ValidationError
 
 from ggongsul.core.generics import APISerializer
-from ggongsul.membership.models import MemberShip
+from ggongsul.membership.models import Membership
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,7 @@ class SubscribeSerializer(APISerializer):
         if not member.is_billing_key_exist:
             raise ValidationError(_("빌링키가 등록 되어있지 않습니다."))
 
-        membership, created = MemberShip.objects.get_or_create(member=member)
+        membership, created = Membership.objects.get_or_create(member=member)
         membership.process_subscribe()
         return {"message": "okay"}
 

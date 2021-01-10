@@ -4,12 +4,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.viewsets import GenericViewSet
 
-from ggongsul.membership.models import MemberShip
+from ggongsul.membership.models import Membership
 from ggongsul.membership.serializers import SubscribeSerializer, UnsubscribeSerializer
 
 
-class MemberShipViewSet(GenericViewSet):
-    queryset = MemberShip.objects.all()
+class MembershipViewSet(GenericViewSet):
+    queryset = Membership.objects.all()
     permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):

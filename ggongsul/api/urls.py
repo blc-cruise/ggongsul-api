@@ -15,7 +15,7 @@ v1_router.register("agreements", agreement_views.AgreementViewSet)
 v1_router.register("reviews", review_views.ReviewViewSet)
 v1_router.register("visitations", visitation_views.VisitationViewSet)
 v1_router.register("members", member_views.MemberViewSet)
-v1_router.register("memberships", membership_views.MemberShipViewSet)
+v1_router.register("memberships", membership_views.MembershipViewSet)
 
 
 urlpatterns = [
