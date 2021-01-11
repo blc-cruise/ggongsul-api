@@ -116,10 +116,11 @@ class Subscription(models.Model):
         validity_days: int = None,
         ended_at: datetime = None,
     ):
+        if not validity_days:
+            validity_days = cls.DEFAULT_VALIDITY_DAYS
         if not ended_at:
-            ended_at = started_at + timedelta(
-                days=validity_days if validity_days else cls.DEFAULT_VALIDITY_DAYS
-            )
+            ended_at = started_at + timedelta(days=validity_days)
+
         return cls.objects.create(
             member=member,
             started_at=started_at,
