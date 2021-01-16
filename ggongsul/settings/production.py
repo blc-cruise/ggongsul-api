@@ -22,6 +22,9 @@ AWS_QUERYSTRING_AUTH = False
 KAKAO_REST_API_KEY = ENV_CONFIG["kakao"]["rest_api_key"]
 KAKAO_API_CLIENT_SECRET = ENV_CONFIG["kakao"]["client_secret"]
 
+IMP_REST_API_KEY = ENV_CONFIG["imp"]["rest_api_key"]
+IMP_REST_API_SECRET = ENV_CONFIG["imp"]["rest_api_secret"]
+
 SLACK_WEBHOOK_URL = ENV_CONFIG["slack"]["webhook"]
 
 # Database

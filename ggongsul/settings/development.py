@@ -25,8 +25,8 @@ SLACK_WEBHOOK_URL = ENV_CONFIG["slack"]["webhook"]
 KAKAO_REST_API_KEY = ENV_CONFIG["kakao"]["rest_api_key"]
 KAKAO_API_CLIENT_SECRET = ENV_CONFIG["kakao"]["client_secret"]
 
-# NAVER_API_CLIENT_ID = ENV_CONFIG["naver"]["client_id"]
-# NAVER_API_CLIENT_SECRET = ENV_CONFIG["naver"]["client_secret"]
+IMP_REST_API_KEY = ENV_CONFIG["imp"]["rest_api_key"]
+IMP_REST_API_SECRET = ENV_CONFIG["imp"]["rest_api_secret"]
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases

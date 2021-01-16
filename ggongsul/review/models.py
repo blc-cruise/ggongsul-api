@@ -8,6 +8,7 @@ from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
 
 from ggongsul.member.models import Member
+from ggongsul.visitation.models import Visitation
 from ggongsul.partner.models import Partner
 
 
@@ -46,10 +47,20 @@ class Review(models.Model):
         on_delete=models.SET_NULL,
         verbose_name=_("작성자"),
     )
+    visitation = models.OneToOneField(
+        Visitation,
+        related_name="review",
+        null=True,
+        on_delete=models.SET_NULL,
+        verbose_name=_("방문 기록"),
+    )
     body = models.TextField(verbose_name=_("본문"))
     rating_score = models.PositiveSmallIntegerField(
         choices=RatingScore.choices, verbose_name=_("별점")
     )
+
+    is_deleted = models.BooleanField(default=False, verbose_name=_("삭제 여부"))
+    deleted_on = models.DateTimeField(null=True, blank=True, verbose_name=_("삭제 날짜"))
 
     created_on = models.DateTimeField(auto_now_add=True, verbose_name=_("생성 날짜"))
     updated_on = models.DateTimeField(auto_now=True, verbose_name=_("최근 정보 변경 날짜"))

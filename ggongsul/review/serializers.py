@@ -1,6 +1,5 @@
 from typing import List
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework import serializers
@@ -8,37 +7,52 @@ from rest_framework.exceptions import ValidationError
 
 from ggongsul.member.serializers import MemberSerializer
 from ggongsul.review.models import Review, ReviewImage
-
-
-class UrlRelatedField(serializers.RelatedField):
-    default_error_messages = {
-        "does_not_exist": _('Invalid pk "{pk_value}" - object does not exist.'),
-        "incorrect_type": _("Incorrect type. Expected pk value, received {data_type}."),
-    }
-
-    def __init__(self, slug_field=None, **kwargs):
-        assert slug_field is not None, "The `slug_field` argument is required."
-        self.slug_field = slug_field
-        super().__init__(**kwargs)
-
-    def to_internal_value(self, data):
-        queryset = self.get_queryset()
-        try:
-            return queryset.get(pk=data)
-        except ObjectDoesNotExist:
-            self.fail("does_not_exist", pk_value=data)
-        except (TypeError, ValueError):
-            self.fail("incorrect_type", data_type=type(data).__name__)
-
-    def to_representation(self, obj):
-        return getattr(obj, self.slug_field).url
+from ggongsul.visitation.models import Visitation
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    images = UrlRelatedField(
-        many=True, slug_field="image", queryset=ReviewImage.objects.all()
-    )
-    member = MemberSerializer(read_only=True)
+    def validate(self, attrs: dict):
+        visitation: Visitation = attrs["visitation"]
+        partner = attrs["partner"]
+        member = attrs["member"] = self.context["request"].user
+
+        if visitation.partner.pk != partner.pk or visitation.member.pk != member.pk:
+            raise ValidationError(_("데이터 정합성 검증에 실패하였습니다."))
+
+        return attrs
+
+    class Meta:
+        model = Review
+        fields = [
+            "id",
+            "member",
+            "partner",
+            "visitation",
+            "rating_score",
+            "body",
+            "images",
+        ]
+        extra_kwargs = {
+            "visitation": {"required": True, "allow_null": False},
+            "partner": {"required": True, "allow_null": False},
+            "member": {"required": True, "allow_null": False, "write_only": True},
+        }
+
+
+class ReviewInfoSerializer(serializers.ModelSerializer):
+    images = serializers.SerializerMethodField()
+    member = serializers.SerializerMethodField()
+
+    def get_images(self, obj: Review):
+        images = []
+        for img in obj.images.all():
+            images.append(img.image.url)
+        return images
+
+    def get_member(self, obj: Review):
+        if not obj.member or not obj.member.is_active:
+            return "탈퇴한 회원"
+        return MemberSerializer(obj.member).data
 
     def validate(self, attrs: dict):
         images: List[ReviewImage] = attrs["images"]
