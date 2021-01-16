@@ -15,11 +15,13 @@ from ggongsul.community.serializers import (
     CommentSerializer,
 )
 from ggongsul.core.filters import DistanceFilterBackend
+from ggongsul.core.paginations import SmallResultsSetPagination
 from ggongsul.core.permissions import IsObjectOwnerMember
 
 
 class PostViewSet(ModelViewSet):
     queryset = Post.objects.filter(is_deleted=False)
+    pagination_class = SmallResultsSetPagination
 
     @property
     def filter_backends(self):

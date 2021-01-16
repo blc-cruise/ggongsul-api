@@ -60,7 +60,7 @@ class Review(models.Model):
     )
 
     is_deleted = models.BooleanField(default=False, verbose_name=_("삭제 여부"))
-    deleted_on = models.DateTimeField(null=True, verbose_name=_("삭제 날짜"))
+    deleted_on = models.DateTimeField(null=True, blank=True, verbose_name=_("삭제 날짜"))
 
     created_on = models.DateTimeField(auto_now_add=True, verbose_name=_("생성 날짜"))
     updated_on = models.DateTimeField(auto_now=True, verbose_name=_("최근 정보 변경 날짜"))

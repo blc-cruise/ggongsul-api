@@ -35,6 +35,12 @@ class Membership(models.Model):
     created_on = models.DateTimeField(auto_now_add=True, verbose_name=_("생성 날짜"))
     updated_on = models.DateTimeField(auto_now=True, verbose_name=_("최근 정보 변경 날짜"))
 
+    def __repr__(self):
+        return self.__str__()
+
+    def __str__(self):
+        return f"{self.member.username} 의 멤버십"
+
     class Meta:
         ordering = ["-id"]
         verbose_name = _("멤버십 정보")
@@ -103,10 +109,22 @@ class Subscription(models.Model):
     created_on = models.DateTimeField(auto_now_add=True, verbose_name=_("생성 날짜"))
     updated_on = models.DateTimeField(auto_now=True, verbose_name=_("최근 정보 변경 날짜"))
 
+    def __repr__(self):
+        return self.__str__()
+
+    def __str__(self):
+        return f"{self.member.username} 의 {self.started_at.month} 월 구독"
+
     class Meta:
         ordering = ["-ended_at"]
         verbose_name = _("구독 정보")
         verbose_name_plural = _("구독 정보")
+
+    def payment_yn(self):
+        return hasattr(self, "payment")
+
+    payment_yn.short_description = _("결제 여부")
+    payment_yn.boolean = True
 
     @classmethod
     def create_subscription(
@@ -163,6 +181,12 @@ class Payment(models.Model):
 
     created_on = models.DateTimeField(auto_now_add=True, verbose_name=_("생성 날짜"))
     updated_on = models.DateTimeField(auto_now=True, verbose_name=_("최근 정보 변경 날짜"))
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __str__(self):
+        return f"{str(self.subscription)} 의 결제 정보"
 
     class Meta:
         ordering = ["-id"]
