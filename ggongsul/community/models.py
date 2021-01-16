@@ -81,7 +81,7 @@ class Comment(models.Model):
         on_delete=models.CASCADE,
         verbose_name=_("게시글"),
     )
-    member = models.OneToOneField(
+    member = models.ForeignKey(
         Member,
         related_name="comments",
         on_delete=models.CASCADE,

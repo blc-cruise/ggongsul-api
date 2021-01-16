@@ -18,7 +18,7 @@ v1_router.register("visitations", visitation_views.VisitationViewSet)
 v1_router.register("members", member_views.MemberViewSet)
 v1_router.register("memberships", membership_views.MembershipViewSet)
 v1_router.register("posts", community_views.PostViewSet)
-v1_router.register("comments", community_views.CommentViewSet)
+v1_router.register(r"posts/(?P<post_id>\d+)/comments", community_views.CommentViewSet)
 
 
 urlpatterns = [

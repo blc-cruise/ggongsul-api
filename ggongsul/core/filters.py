@@ -15,6 +15,17 @@ class MemberFilterBackend(filters.BaseFilterBackend):
         return queryset.filter(member=request.user)
 
 
+class PostFilterBackend(filters.BaseFilterBackend):
+    """
+    Filter that only allows users to see their own objects.
+    """
+
+    def filter_queryset(self, request, queryset, view):
+        post_look_up_keyword = getattr(view, "post_look_up_keyword", "post_id")
+        post_id = view.kwargs.get(post_look_up_keyword, None)
+        return queryset.filter(post=post_id)
+
+
 class DistanceFilterBackend(filters.BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
         lat, lng = validate_dict_key(request.query_params, ["lat", "lng"])

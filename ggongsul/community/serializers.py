@@ -1,5 +1,8 @@
 from django.contrib.auth.models import AnonymousUser
+from django.utils.translation import gettext_lazy as _
+
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from ggongsul.community.models import Post, Comment
 from ggongsul.member.serializers import MemberSerializer
@@ -18,6 +21,16 @@ class PostSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     def validate(self, attrs: dict):
         attrs["member"] = self.context["request"].user
+
+        view = self.context["view"]
+        post_look_up_keyword = getattr(view, "post_look_up_keyword", "post_id")
+        post_id = view.kwargs.get(post_look_up_keyword, None)
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            raise ValidationError(_(f"post id: {post_id} is not exists!"))
+
+        attrs["post"] = post
         return attrs
 
     class Meta:
@@ -30,7 +43,7 @@ class CommentInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ["member", "body", "created_on"]
+        fields = ["id", "member", "body", "created_on"]
 
 
 class PostShortInfoSerializer(serializers.ModelSerializer):
@@ -46,6 +59,7 @@ class PostShortInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = [
+            "id",
             "member",
             "short_body",
             "image",
@@ -71,6 +85,7 @@ class PostDetailInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = [
+            "id",
             "member",
             "body",
             "image",
