@@ -61,6 +61,8 @@ class PartnerAdmin(admin.ModelAdmin):
     form = PartnerForm
     inlines = [PartnerAgreementInline, PartnerDetailInline]
     exclude = ("longitude", "latitude")
+    list_filter = ("is_active",)
+    search_fields = ("name", "contact_name")
     list_display = (
         "name",
         "id",
