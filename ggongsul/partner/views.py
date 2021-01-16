@@ -6,7 +6,7 @@ from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, resolve_url
 from rest_framework import permissions
 from rest_framework.decorators import action
-from rest_framework.exceptions import ValidationError
+from rest_framework.filters import SearchFilter
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.renderers import (
     TemplateHTMLRenderer,
@@ -24,7 +24,7 @@ from .serializers import (
     PartnerShortInfoSerializer,
     PartnerDetailInfoSerializer,
 )
-from ..core.validators import validate_dict_key
+from ..core.filters import DistanceFilterBackend
 
 logger = logging.getLogger(__name__)
 
@@ -125,6 +125,13 @@ class PartnerAgreementView(APIView):
 class PartnerViewSet(ReadOnlyModelViewSet):
     queryset = Partner.objects.filter(is_active=True)
     permission_classes = [permissions.AllowAny]
+    search_fields = ["name"]
+
+    @property
+    def filter_backends(self):
+        if self.action == "near_partners":
+            return [DistanceFilterBackend]
+        return [SearchFilter]
 
     def get_serializer_class(self):
         if self.action == "near_partners":
@@ -135,24 +142,4 @@ class PartnerViewSet(ReadOnlyModelViewSet):
 
     @action(detail=False, methods=["get"], url_path="near")
     def near_partners(self, request: Request):
-        lat, lng = validate_dict_key(request.query_params, ["lat", "lng"])
-
-        if (
-            not lat.replace(".", "", 1).isnumeric()
-            or not lng.replace(".", "", 1).isnumeric()
-        ):
-            raise ValidationError(
-                {"msg": "'lat' and 'lng' query params should be float!"}
-            )
-
-        lat: float = float(lat)
-        lng: float = float(lng)
-
-        queryset = Partner.get_near_partners(float(lat), float(lng))
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return self.list(request)

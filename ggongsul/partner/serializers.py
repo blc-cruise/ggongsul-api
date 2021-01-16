@@ -144,6 +144,8 @@ class PartnerDetailInfoSerializer(serializers.ModelSerializer):
             "img_main",
             "category",
             "store_phone",
+            "avg_review_rating",
+            "total_review_cnt",
             "img_store_list",
             "img_menu_list",
             "img_price_list",

@@ -7,6 +7,7 @@ from ggongsul.review import views as review_views
 from ggongsul.visitation import views as visitation_views
 from ggongsul.member import views as member_views
 from ggongsul.membership import views as membership_views
+from ggongsul.community import views as community_views
 
 
 v1_router = DefaultRouter()
@@ -16,6 +17,8 @@ v1_router.register("reviews", review_views.ReviewViewSet)
 v1_router.register("visitations", visitation_views.VisitationViewSet)
 v1_router.register("members", member_views.MemberViewSet)
 v1_router.register("memberships", membership_views.MembershipViewSet)
+v1_router.register("posts", community_views.PostViewSet)
+v1_router.register("comments", community_views.CommentViewSet)
 
 
 urlpatterns = [

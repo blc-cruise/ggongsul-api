@@ -9,11 +9,8 @@ from django.db import models
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
 
-from django.db.models.functions import Power, Sin, Cos, ATan2, Sqrt, Radians
-from django.db.models import F
+from django.db.models import Avg
 
-
-# Create your models here.
 from ggongsul.core.exceptions import CommError
 
 logger = logging.getLogger(__name__)
@@ -63,26 +60,14 @@ class Partner(models.Model):
     def __repr__(self):
         return self.__str__()
 
-    @classmethod
-    def get_near_partners(
-        cls, lat: float, lng: float, num_km: int = 5, limit: int = 10
-    ):
-        dlat = Radians(F("latitude") - lat)
-        dlong = Radians(F("longitude") - lng)
+    def avg_review_rating(self) -> float:
+        aggregated = self.reviews.all().aggregate(Avg("rating_score"))[
+            "rating_score__avg"
+        ]
+        return aggregated if aggregated else 0.0
 
-        a = Power(Sin(dlat / 2), 2) + Cos(Radians(lat)) * Cos(
-            Radians(F("latitude"))
-        ) * Power(Sin(dlong / 2), 2)
-
-        c = 2 * ATan2(Sqrt(a), Sqrt(1 - a))
-        d = 6371 * c
-
-        return (
-            cls.objects.filter(is_active=True)
-            .annotate(distance=d)
-            .order_by("distance")
-            .filter(distance__lt=num_km)[:limit]
-        )
+    def total_review_cnt(self) -> int:
+        return len(self.reviews.all())
 
     def detail_update_url(self) -> str:
         from django.conf import settings
@@ -94,6 +79,8 @@ class Partner(models.Model):
             return False
         return self.agreement.policy_agreed_at is not None
 
+    avg_review_rating.short_description = "리뷰 평점"
+    total_review_cnt.short_description = "전체 리뷰 수"
     detail_update_url.short_description = "상세 정보 입력 url"
     policy_agree_yn.short_description = "이용약관 동의 여부"
     policy_agree_yn.boolean = True

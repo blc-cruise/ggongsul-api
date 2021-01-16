@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "ggongsul.review",
     "ggongsul.visitation",
     "ggongsul.membership",
+    "ggongsul.community",
 ]
 
 MIDDLEWARE = [
@@ -182,6 +183,7 @@ SIMPLE_JWT = {
 # for DRF settings
 REST_FRAMEWORK = {
     "NON_FIELD_ERRORS_KEY": "validation_errors",
+    "SEARCH_PARAM": "q",
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),

@@ -41,13 +41,18 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class ReviewInfoSerializer(serializers.ModelSerializer):
     images = serializers.SerializerMethodField()
-    member = MemberSerializer(read_only=True)
+    member = serializers.SerializerMethodField()
 
     def get_images(self, obj: Review):
         images = []
         for img in obj.images.all():
             images.append(img.image.url)
         return images
+
+    def get_member(self, obj: Review):
+        if not obj.member or not obj.member.is_active:
+            return "탈퇴한 회원"
+        return MemberSerializer(obj.member).data
 
     def validate(self, attrs: dict):
         images: List[ReviewImage] = attrs["images"]
