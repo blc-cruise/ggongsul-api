@@ -37,5 +37,10 @@ class MemberAdmin(UserAdmin):
         ),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
-    list_display = ("username", "is_staff")
+    list_display = (
+        "username",
+        "is_staff",
+        "is_membership_activated",
+        "has_membership_benefits",
+    )
     search_fields = ("username", "email")

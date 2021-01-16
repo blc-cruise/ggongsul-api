@@ -65,7 +65,7 @@ class MemberViewSet(GenericViewSet):
     @action(detail=False, methods=["get"], url_path="me/billing-key")
     def get_billing_key(self, request: Request):
         member = request.user
-        if not member.is_billing_key_exist:
+        if not member.is_billing_key_exist():
             raise NotFound({"suggested_billing_key": member.billing_key})
 
         return Response({"billing_key": member.billing_key})

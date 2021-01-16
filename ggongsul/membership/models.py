@@ -50,7 +50,7 @@ class Membership(models.Model):
     def process_subscribe(self):
         cur_datetime = timezone.now()
         # 이미 결제가 되어 있는 경우
-        if self.member.has_membership_benefits:
+        if self.member.has_membership_benefits():
             self.is_active = True
             self.last_activated_at = cur_datetime
             self.save()

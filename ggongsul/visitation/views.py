@@ -29,8 +29,8 @@ class VisitationViewSet(
     @property
     def permission_classes(self):
         if self.action in ["retrieve", "list"]:
-            return IsAuthenticated
-        return HasMembershipBenefits
+            return [IsAuthenticated]
+        return [HasMembershipBenefits]
 
     def get_serializer_class(self):
         if self.action == "create":
