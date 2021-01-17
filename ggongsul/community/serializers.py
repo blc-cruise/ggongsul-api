@@ -16,6 +16,7 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         exclude = ("is_deleted", "deleted_on")
+        extra_kwargs = {"member": {"required": False, "allow_null": True}}
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -36,6 +37,7 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         exclude = ("is_deleted", "deleted_on")
+        extra_kwargs = {"member": {"required": False, "allow_null": True}}
 
 
 class CommentInfoSerializer(serializers.ModelSerializer):
