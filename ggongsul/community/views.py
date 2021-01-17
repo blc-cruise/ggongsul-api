@@ -1,4 +1,5 @@
 from django.utils import timezone
+
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -14,6 +15,7 @@ from ggongsul.community.serializers import (
     PostSerializer,
     CommentSerializer,
     CommentInfoSerializer,
+    PostImageSerializer,
 )
 from ggongsul.core.filters import DistanceFilterBackend, PostFilterBackend
 from ggongsul.core.paginations import SmallResultsSetPagination
@@ -45,6 +47,8 @@ class PostViewSet(ModelViewSet):
             return PostDetailInfoSerializer
         if self.action == "tab_attention":
             return Serializer
+        if self.action == "upload_image":
+            return PostImageSerializer
         return PostSerializer
 
     def perform_destroy(self, instance: Post):
@@ -65,6 +69,10 @@ class PostViewSet(ModelViewSet):
             attention.save()
 
         return Response(status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=["post"], url_path="upload-image")
+    def upload_image(self, request: Request):
+        return self.create(request)
 
 
 class CommentViewSet(ModelViewSet):

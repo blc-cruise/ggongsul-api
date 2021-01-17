@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from ggongsul.community.models import Post, Comment
+from ggongsul.community.models import Post, Comment, PostImage
 from ggongsul.member.serializers import MemberSerializer
 
 
@@ -15,8 +15,24 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        exclude = ("is_deleted", "deleted_on")
+        fields = [
+            "id",
+            "member",
+            "body",
+            "longitude",
+            "latitude",
+            "images",
+        ]
         extra_kwargs = {"member": {"required": False, "allow_null": True}}
+
+
+class PostImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostImage
+        fields = [
+            "id",
+            "image",
+        ]
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -51,6 +67,7 @@ class CommentInfoSerializer(serializers.ModelSerializer):
 class PostShortInfoSerializer(serializers.ModelSerializer):
     member = MemberSerializer(read_only=True)
     is_tabbed = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
 
     def get_is_tabbed(self, obj: Post):
         member = self.context["request"].user
@@ -58,13 +75,19 @@ class PostShortInfoSerializer(serializers.ModelSerializer):
             return False
         return obj.attentions.filter(member=member, is_deleted=False).exists()
 
+    def get_images(self, obj: Post):
+        images = []
+        for img in obj.images.all():
+            images.append(img.image.url)
+        return images
+
     class Meta:
         model = Post
         fields = [
             "id",
             "member",
             "short_body",
-            "image",
+            "images",
             "longitude",
             "latitude",
             "total_attention_cnt",
@@ -75,8 +98,10 @@ class PostShortInfoSerializer(serializers.ModelSerializer):
 
 
 class PostDetailInfoSerializer(serializers.ModelSerializer):
+    member = MemberSerializer(read_only=True)
     comments = CommentInfoSerializer(read_only=True, many=True)
     is_tabbed = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
 
     def get_is_tabbed(self, obj: Post):
         member = self.context["request"].user
@@ -84,13 +109,19 @@ class PostDetailInfoSerializer(serializers.ModelSerializer):
             return False
         return obj.attentions.filter(member=member, is_deleted=False).exists()
 
+    def get_images(self, obj: Post):
+        images = []
+        for img in obj.images.all():
+            images.append(img.image.url)
+        return images
+
     class Meta:
         model = Post
         fields = [
             "id",
             "member",
             "body",
-            "image",
+            "images",
             "longitude",
             "latitude",
             "total_attention_cnt",
