@@ -2,6 +2,7 @@ from django.utils import timezone
 
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.filters import OrderingFilter
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -25,11 +26,12 @@ from ggongsul.core.permissions import IsObjectOwnerMember
 class PostViewSet(ModelViewSet):
     queryset = Post.objects.filter(is_deleted=False)
     pagination_class = SmallResultsSetPagination
+    ordering = ("-created_on",)
 
     @property
     def filter_backends(self):
         if self.action == "list":
-            return [DistanceFilterBackend]
+            return [DistanceFilterBackend, OrderingFilter]
         return []
 
     @property
