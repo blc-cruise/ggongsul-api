@@ -36,12 +36,12 @@ class PostImageSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    username = serializers.SerializerMethodField()
+    member_detail = serializers.SerializerMethodField()
 
-    def get_username(self, obj: Comment):
+    def get_member_detail(self, obj: Comment):
         if obj.member is None:
             return None
-        return obj.member.username
+        return MemberSerializer(obj.member).data
 
     def validate(self, attrs: dict):
         attrs["member"] = self.context["request"].user

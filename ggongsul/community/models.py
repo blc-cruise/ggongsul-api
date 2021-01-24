@@ -37,6 +37,7 @@ class Post(models.Model):
     latitude = models.DecimalField(
         max_digits=8, decimal_places=6, null=True, verbose_name=_("위도")
     )
+    address = models.CharField(max_length=64, null=True, verbose_name=_("주소"))
 
     is_deleted = models.BooleanField(default=False, verbose_name=_("삭제 여부"))
     deleted_on = models.DateTimeField(null=True, blank=True, verbose_name=_("삭제 날짜"))

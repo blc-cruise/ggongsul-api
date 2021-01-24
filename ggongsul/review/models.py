@@ -70,7 +70,7 @@ class Review(models.Model):
         verbose_name_plural = _("리뷰")
 
     def __str__(self):
-        return f"{self.member} 의 {self.partner} 업체 리뷰"
+        return f"{self.member} 의 {self.partner} 업체 리뷰 {self.id}"
 
     def __repr__(self):
         return self.__str__()
