@@ -22,23 +22,25 @@ class Member(AbstractUser):
         verbose_name = _("사용자")
         verbose_name_plural = _("사용자")
 
-    @property
     def has_membership_benefits(self) -> bool:
         cur_datetime = timezone.now()
         return self.subscriptions.filter(ended_at__gt=cur_datetime).exists()
 
-    @property
-    def is_billing_key_exist(self) -> bool:
-        imp_client = IMPHelper()
-        return imp_client.is_customer_uid_exist(self.billing_key)
+    has_membership_benefits.short_description = _("멤버십 혜택 여부")
+    has_membership_benefits.boolean = True
 
-    @property
     def is_membership_activated(self) -> bool:
         if not hasattr(self, "membership"):
             return False
         return self.membership.is_active
 
-    @property
+    is_membership_activated.short_description = _("멤버십 활성화 여부")
+    is_membership_activated.boolean = True
+
+    def is_billing_key_exist(self) -> bool:
+        imp_client = IMPHelper()
+        return imp_client.is_customer_uid_exist(self.billing_key)
+
     def next_membership_payment(self) -> Optional[str]:
         if not hasattr(self, "membership"):
             return None
@@ -47,7 +49,6 @@ class Member(AbstractUser):
         sub = self.subscriptions.latest("-ended_at")
         return sub.ended_at.strftime("%Y년 %m월 %d일")
 
-    @property
     def total_membership_days(self) -> int:
         cur_datetime = timezone.now()
         if not hasattr(self, "membership"):
@@ -58,7 +59,6 @@ class Member(AbstractUser):
             return 0
         return (cur_datetime - self.membership.last_activated_at).days
 
-    @property
     def total_visitation_cnt(self) -> int:
         return len(self.visitations.all())
 

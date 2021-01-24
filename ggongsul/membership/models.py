@@ -50,7 +50,7 @@ class Membership(models.Model):
     def process_subscribe(self):
         cur_datetime = timezone.now()
         # 이미 결제가 되어 있는 경우
-        if self.member.has_membership_benefits:
+        if self.member.has_membership_benefits():
             self.is_active = True
             self.last_activated_at = cur_datetime
             self.save()
@@ -80,8 +80,10 @@ class Membership(models.Model):
         latest_subscription = self.member.subscriptions.latest("-ended_at")
 
         # 환불 정책
-        if latest_subscription.is_in_refund_validity_days and hasattr(
-            latest_subscription, "payment"
+        if (
+            not latest_subscription.has_visitation_records()
+            and latest_subscription.is_in_refund_validity_days()
+            and hasattr(latest_subscription, "payment")
         ):
             latest_subscription.payment.cancel_payment("멤버십 구독 취소 환불 정책에 따른 환불")
 
@@ -146,13 +148,17 @@ class Subscription(models.Model):
             ended_at=ended_at,
         )
 
-    @property
     def is_in_refund_validity_days(self) -> bool:
         cur_datetime = timezone.now()
         refund_validity_datetime = self.started_at + timedelta(
             days=Subscription.REFUND_VALIDITY_DAYS
         )
         return cur_datetime <= refund_validity_datetime
+
+    def has_visitation_records(self) -> bool:
+        return self.member.visitations.filter(
+            created_on__gte=self.started_at, created_on__lt=self.ended_at
+        ).exists()
 
 
 class Payment(models.Model):

@@ -134,6 +134,12 @@ class PartnerViewSet(ReadOnlyModelViewSet):
         return [SearchFilter]
 
     def get_serializer_class(self):
+        info_level = self.request.query_params.get("info", None)
+        if info_level == "short":
+            return PartnerShortInfoSerializer
+        elif info_level == "long":
+            return PartnerDetailInfoSerializer
+
         if self.action == "near_partners":
             return PartnerShortInfoSerializer
         elif self.action == "retrieve":

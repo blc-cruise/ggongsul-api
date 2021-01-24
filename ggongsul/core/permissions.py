@@ -6,7 +6,7 @@ class HasMembershipBenefits(BasePermission):
         return bool(
             request.user
             and request.user.is_authenticated
-            and request.user.has_membership_benefits
+            and request.user.has_membership_benefits()
         )
 
 

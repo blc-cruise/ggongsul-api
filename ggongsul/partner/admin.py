@@ -15,10 +15,14 @@ logger = logging.getLogger(__name__)
 class PartnerDetailInline(admin.StackedInline):
     model = PartnerDetail
     exclude = ("secret_token",)
+    can_delete = False
+    readonly_fields = ("created_on", "updated_on")
 
 
-class PartnerAgreementInline(admin.StackedInline):
+class PartnerAgreementInline(admin.TabularInline):
     model = PartnerAgreement
+    can_delete = False
+    readonly_fields = ("policy_agreed_at", "created_on", "updated_on")
 
 
 @admin.register(PartnerCategory)
@@ -27,6 +31,12 @@ class PartnerCategoryAdmin(admin.ModelAdmin):
 
 
 class PartnerForm(forms.ModelForm):
+    def clean_cert_num(self):
+        cert_num = self.cleaned_data.get("cert_num")
+        if cert_num and not cert_num.isdigit():
+            raise ValidationError("인증 번호는 반드시 숫자만 포함해야합니다!")
+        return cert_num
+
     def clean_is_active(self):
         is_active = self.cleaned_data.get("is_active")
 
@@ -34,6 +44,9 @@ class PartnerForm(forms.ModelForm):
             self.instance.latitude is None or self.instance.longitude is None
         ):
             raise ValidationError("주소 정보가 정확하지 않은것 같습니다! 한번더 확인해주세요.")
+
+        if is_active and self.instance.cert_num is None:
+            raise ValidationError("업체 인증 번호가 설정되지 않았습니다! 인증 번호를 설정 후 활성화 해주세요.")
 
         return is_active
 
@@ -61,6 +74,8 @@ class PartnerAdmin(admin.ModelAdmin):
     form = PartnerForm
     inlines = [PartnerAgreementInline, PartnerDetailInline]
     exclude = ("longitude", "latitude")
+    list_filter = ("is_active",)
+    search_fields = ("name", "contact_name")
     list_display = (
         "name",
         "id",

@@ -37,6 +37,9 @@ class Partner(models.Model):
     address = models.CharField(max_length=128, verbose_name=_("업체 주소"))
     contact_name = models.CharField(max_length=16, verbose_name=_("대표 이름"))
     contact_phone = models.CharField(max_length=16, verbose_name=_("대표 연락처"))
+    cert_num = models.CharField(
+        max_length=10, null=True, blank=True, verbose_name=_("업체 인증 번호")
+    )
 
     is_active = models.BooleanField(default=False, verbose_name=_("업체 활성화 여부"))
 
@@ -66,23 +69,26 @@ class Partner(models.Model):
         ]
         return aggregated if aggregated else 0.0
 
+    avg_review_rating.short_description = _("리뷰 평점")
+
     def total_review_cnt(self) -> int:
         return len(self.reviews.all())
+
+    total_review_cnt.short_description = _("전체 리뷰 수")
 
     def detail_update_url(self) -> str:
         from django.conf import settings
 
         return f"{settings.BASE_URL}/partner/detail?token={self.detail.secret_token}"
 
+    detail_update_url.short_description = _("상세 정보 입력 url")
+
     def policy_agree_yn(self) -> bool:
         if not hasattr(self, "agreement"):
             return False
         return self.agreement.policy_agreed_at is not None
 
-    avg_review_rating.short_description = "리뷰 평점"
-    total_review_cnt.short_description = "전체 리뷰 수"
-    detail_update_url.short_description = "상세 정보 입력 url"
-    policy_agree_yn.short_description = "이용약관 동의 여부"
+    policy_agree_yn.short_description = _("이용약관 동의 여부")
     policy_agree_yn.boolean = True
 
 

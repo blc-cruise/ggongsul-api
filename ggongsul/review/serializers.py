@@ -35,7 +35,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             "visitation": {"required": True, "allow_null": False},
             "partner": {"required": True, "allow_null": False},
-            "member": {"required": True, "allow_null": False, "write_only": True},
+            "member": {"required": False, "allow_null": True},
         }
 
 

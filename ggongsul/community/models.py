@@ -15,11 +15,11 @@ class PathAndRename:
     def __init__(self, sub_path):
         self.path = sub_path
 
-    def __call__(self, instance: Post, filename: str):
+    def __call__(self, instance: PostImage, filename: str):
         ext = filename.split(".")[-1]  # eg: 'jpg'
         uid = uuid.uuid4().hex[:10]  # eg: '567ae32f97'
 
-        renamed_filename = f"{instance.member.id}/{uid}.{ext}"
+        renamed_filename = f"{uid}.{ext}"
         return os.path.join(self.path, renamed_filename)
 
 
@@ -31,18 +31,13 @@ class Post(models.Model):
         verbose_name=_("사용자"),
     )
     body = models.TextField(verbose_name=_("본문"))
-    image = models.ImageField(
-        null=True,
-        blank=True,
-        upload_to=PathAndRename("/image/post/"),
-        verbose_name=_("이미지"),
-    )
     longitude = models.DecimalField(
         max_digits=9, decimal_places=6, null=True, verbose_name=_("경도")
     )
     latitude = models.DecimalField(
         max_digits=8, decimal_places=6, null=True, verbose_name=_("위도")
     )
+    address = models.CharField(max_length=64, null=True, verbose_name=_("주소"))
 
     is_deleted = models.BooleanField(default=False, verbose_name=_("삭제 여부"))
     deleted_on = models.DateTimeField(null=True, blank=True, verbose_name=_("삭제 날짜"))
@@ -74,6 +69,29 @@ class Post(models.Model):
     total_comment_cnt.short_description = "전체 댓글 수"
 
 
+class PostImage(models.Model):
+    post = models.ForeignKey(
+        Post, related_name="images", null=True, on_delete=models.SET_NULL
+    )
+    image = models.ImageField(
+        upload_to=PathAndRename("/image/post/"),
+        verbose_name=_("게시글 사진"),
+    )
+
+    created_on = models.DateTimeField(auto_now_add=True, verbose_name=_("생성 날짜"))
+    updated_on = models.DateTimeField(auto_now=True, verbose_name=_("최근 정보 변경 날짜"))
+
+    class Meta:
+        verbose_name = _("게시글 이미지")
+        verbose_name_plural = _("게시글 이미지")
+
+    def __str__(self):
+        return self.image.url
+
+    def __repr__(self):
+        return self.__str__()
+
+
 class Comment(models.Model):
     post = models.ForeignKey(
         Post,
@@ -81,7 +99,7 @@ class Comment(models.Model):
         on_delete=models.CASCADE,
         verbose_name=_("게시글"),
     )
-    member = models.OneToOneField(
+    member = models.ForeignKey(
         Member,
         related_name="comments",
         on_delete=models.CASCADE,
