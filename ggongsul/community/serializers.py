@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.contrib.auth.models import AnonymousUser
 from django.utils.translation import gettext_lazy as _
 
@@ -5,12 +7,32 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from ggongsul.community.models import Post, Comment, PostImage
+from ggongsul.core.exceptions import BadResponse
+from ggongsul.lib.kakao import KakaoApiHelper
 from ggongsul.member.serializers import MemberSerializer
+
+
+def coord_to_region(lng: float, lat: float) -> Optional[str]:
+    helper = KakaoApiHelper()
+
+    try:
+        res = helper.coord_to_region(lng=lng, lat=lat)
+    except BadResponse as e:
+        if e.status_code == -2:
+            return "부정확한 주소"
+        return None
+
+    docs = res.get("documents", [])
+    if docs:
+        return docs[0]["address_name"]
+
+    return None
 
 
 class PostSerializer(serializers.ModelSerializer):
     def validate(self, attrs: dict):
         attrs["member"] = self.context["request"].user
+        attrs["address"] = coord_to_region(attrs["longitude"], attrs["latitude"])
         return attrs
 
     class Meta:
@@ -18,12 +40,16 @@ class PostSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "member",
+            "address",
             "body",
             "longitude",
             "latitude",
             "images",
         ]
-        extra_kwargs = {"member": {"required": False, "allow_null": True}}
+        extra_kwargs = {
+            "member": {"required": False, "allow_null": True},
+            "address": {"required": False, "allow_null": True},
+        }
 
 
 class PostImageSerializer(serializers.ModelSerializer):
@@ -77,6 +103,7 @@ class PostShortInfoSerializer(serializers.ModelSerializer):
     member = MemberSerializer(read_only=True)
     is_tabbed = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
+    address = serializers.SerializerMethodField()
 
     def get_is_tabbed(self, obj: Post):
         member = self.context["request"].user
@@ -89,6 +116,20 @@ class PostShortInfoSerializer(serializers.ModelSerializer):
         for img in obj.images.all():
             images.append(img.image.url)
         return images
+
+    def get_address(self, obj: Post):
+        if obj.address:
+            return obj.address
+        if not obj.longitude or not obj.latitude:
+            return _("부정확한 주소")
+
+        address = coord_to_region(float(obj.longitude), float(obj.latitude))
+        if not address:
+            return _("부정확한 주소")
+
+        obj.address = address
+        obj.save()
+        return obj.address
 
     class Meta:
         model = Post
@@ -97,8 +138,7 @@ class PostShortInfoSerializer(serializers.ModelSerializer):
             "member",
             "short_body",
             "images",
-            "longitude",
-            "latitude",
+            "address",
             "total_attention_cnt",
             "total_comment_cnt",
             "is_tabbed",
@@ -106,23 +146,8 @@ class PostShortInfoSerializer(serializers.ModelSerializer):
         ]
 
 
-class PostDetailInfoSerializer(serializers.ModelSerializer):
-    member = MemberSerializer(read_only=True)
+class PostDetailInfoSerializer(PostShortInfoSerializer):
     comments = CommentInfoSerializer(read_only=True, many=True)
-    is_tabbed = serializers.SerializerMethodField()
-    images = serializers.SerializerMethodField()
-
-    def get_is_tabbed(self, obj: Post):
-        member = self.context["request"].user
-        if isinstance(member, AnonymousUser):
-            return False
-        return obj.attentions.filter(member=member, is_deleted=False).exists()
-
-    def get_images(self, obj: Post):
-        images = []
-        for img in obj.images.all():
-            images.append(img.image.url)
-        return images
 
     class Meta:
         model = Post
@@ -131,8 +156,7 @@ class PostDetailInfoSerializer(serializers.ModelSerializer):
             "member",
             "body",
             "images",
-            "longitude",
-            "latitude",
+            "address",
             "total_attention_cnt",
             "total_comment_cnt",
             "is_tabbed",

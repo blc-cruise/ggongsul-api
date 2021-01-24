@@ -35,6 +35,10 @@ class KakaoApiHelper:
             raise exceptions.CommError("Not allowed Method!")
 
         if res.status_code != status.HTTP_200_OK:
+            if res.status_code == status.HTTP_400_BAD_REQUEST:
+                res_dict = res.json()
+                if "msg" in res_dict and "code" in res_dict:
+                    raise exceptions.BadResponse(res_dict["msg"], url, res_dict["code"])
             raise exceptions.BadResponse(res.text, url, res.status_code)
 
         return res.json()
@@ -48,4 +52,15 @@ class KakaoApiHelper:
             base_url + uri,
             method,
             params={"query": query, "page": page, "AddressSize": address_size},
+        )
+
+    def coord_to_region(self, lng: float, lat: float):
+        base_url = "https://dapi.kakao.com"
+        uri = "/v2/local/geo/coord2regioncode.json"
+        method = "get"
+
+        return self._request(
+            base_url + uri,
+            method,
+            params={"x": lng, "y": lat},
         )
