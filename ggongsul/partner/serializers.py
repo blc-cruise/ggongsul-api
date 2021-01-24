@@ -135,6 +135,8 @@ class PartnerDetailInfoSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "address",
+            "longitude",
+            "latitude",
             "short_desc",
             "detail_desc",
             "open_time",

@@ -36,6 +36,13 @@ class PostImageSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    username = serializers.SerializerMethodField()
+
+    def get_username(self, obj: Comment):
+        if obj.member is None:
+            return None
+        return obj.member.username
+
     def validate(self, attrs: dict):
         attrs["member"] = self.context["request"].user
 
@@ -53,7 +60,9 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         exclude = ("is_deleted", "deleted_on")
-        extra_kwargs = {"member": {"required": False, "allow_null": True}}
+        extra_kwargs = {
+            "member": {"required": False, "allow_null": True, "write_only": True}
+        }
 
 
 class CommentInfoSerializer(serializers.ModelSerializer):
