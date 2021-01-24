@@ -37,6 +37,9 @@ class Partner(models.Model):
     address = models.CharField(max_length=128, verbose_name=_("업체 주소"))
     contact_name = models.CharField(max_length=16, verbose_name=_("대표 이름"))
     contact_phone = models.CharField(max_length=16, verbose_name=_("대표 연락처"))
+    cert_num = models.CharField(
+        max_length=10, null=True, blank=True, verbose_name=_("업체 인증 번호")
+    )
 
     is_active = models.BooleanField(default=False, verbose_name=_("업체 활성화 여부"))
 

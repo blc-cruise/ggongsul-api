@@ -2,7 +2,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from rest_framework import mixins
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.request import Request
 from rest_framework.viewsets import GenericViewSet
 
 from ggongsul.core.filters import MemberFilterBackend
@@ -36,6 +35,3 @@ class VisitationViewSet(
         if self.action == "create":
             return VisitationSerializer
         return VisitationInfoSerializer
-
-    def create(self, request: Request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
