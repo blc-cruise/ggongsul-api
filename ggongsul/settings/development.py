@@ -2,6 +2,8 @@ from .base import *
 
 import json
 
+from celery.schedules import crontab
+
 DEBUG = True
 ALLOWED_HOSTS = "*"
 
@@ -20,7 +22,8 @@ AWS_STORAGE_BUCKET_NAME = ENV_CONFIG["aws"]["storage_bucket_name"]
 AWS_S3_REGION_NAME = ENV_CONFIG["aws"]["s3_region_name"]
 AWS_QUERYSTRING_AUTH = False
 
-SLACK_WEBHOOK_URL = ENV_CONFIG["slack"]["webhook"]
+SLACK_INFO_WEBHOOK_URL = ENV_CONFIG["slack"]["info_webhook"]
+SLACK_ERROR_WEBHOOK_URL = ENV_CONFIG["slack"]["error_webhook"]
 
 KAKAO_REST_API_KEY = ENV_CONFIG["kakao"]["rest_api_key"]
 KAKAO_API_CLIENT_SECRET = ENV_CONFIG["kakao"]["client_secret"]
@@ -46,3 +49,8 @@ DATABASES = {
         },
     },
 }
+
+# Celery Settings
+CELERY_BROKER_URL = ENV_CONFIG["celery"]["broker"]
+# Celery Beat Settings
+CELERY_BEAT_SCHEDULE = {}

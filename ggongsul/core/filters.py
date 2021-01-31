@@ -16,10 +16,6 @@ class MemberFilterBackend(filters.BaseFilterBackend):
 
 
 class PostFilterBackend(filters.BaseFilterBackend):
-    """
-    Filter that only allows users to see their own objects.
-    """
-
     def filter_queryset(self, request, queryset, view):
         post_look_up_keyword = getattr(view, "post_look_up_keyword", "post_id")
         post_id = view.kwargs.get(post_look_up_keyword, None)

@@ -2,6 +2,8 @@ from .base import *
 
 import json
 
+from celery.schedules import crontab
+
 DEBUG = False
 ALLOWED_HOSTS = "*"
 
@@ -13,19 +15,22 @@ print("loading: env_production.json")
 
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
+LOGGING["loggers"]["ggongsul"]["level"] = "INFO"
+
 AWS_ACCESS_KEY_ID = ENV_CONFIG["aws"]["access_key_id"]
 AWS_SECRET_ACCESS_KEY = ENV_CONFIG["aws"]["secret_access_key_id"]
 AWS_STORAGE_BUCKET_NAME = ENV_CONFIG["aws"]["storage_bucket_name"]
 AWS_S3_REGION_NAME = ENV_CONFIG["aws"]["s3_region_name"]
 AWS_QUERYSTRING_AUTH = False
 
+SLACK_INFO_WEBHOOK_URL = ENV_CONFIG["slack"]["info_webhook"]
+SLACK_ERROR_WEBHOOK_URL = ENV_CONFIG["slack"]["error_webhook"]
+
 KAKAO_REST_API_KEY = ENV_CONFIG["kakao"]["rest_api_key"]
 KAKAO_API_CLIENT_SECRET = ENV_CONFIG["kakao"]["client_secret"]
 
 IMP_REST_API_KEY = ENV_CONFIG["imp"]["rest_api_key"]
 IMP_REST_API_SECRET = ENV_CONFIG["imp"]["rest_api_secret"]
-
-SLACK_WEBHOOK_URL = ENV_CONFIG["slack"]["webhook"]
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
@@ -46,8 +51,17 @@ DATABASES = {
     },
 }
 
-LOGGING["loggers"]["ggongsul"]["level"] = "INFO"
-
 # REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = [
 #     "rest_framework.renderers.JSONRenderer",
 # ]
+
+# Celery Settings
+CELERY_BROKER_URL = ENV_CONFIG["celery"]["broker"]
+# Celery Beat Settings
+CELERY_BEAT_SCHEDULE = {
+    "schedule_check_expire_membership": {
+        "task": "ggongsul.membership.tasks.check_expire_membership",
+        "schedule": crontab(hour=20, minute=30),
+        "args": (),
+    },
+}

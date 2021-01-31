@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Tuple, Optional
 
 from django.contrib.auth.models import AbstractUser
@@ -41,13 +42,27 @@ class Member(AbstractUser):
         imp_client = IMPHelper()
         return imp_client.is_customer_uid_exist(self.billing_key)
 
-    def next_membership_payment(self) -> Optional[str]:
+    def active_subscription(self):
+        cur_datetime = timezone.now()
+        try:
+            sub = self.subscriptions.latest("-ended_at")
+        except models.ObjectDoesNotExist:
+            return None
+
+        if sub.ended_at < cur_datetime:
+            return None
+        return sub
+
+    def next_membership_payment(self) -> Optional[datetime]:
         if not hasattr(self, "membership"):
             return None
         if not self.membership.is_active:
             return None
-        sub = self.subscriptions.latest("-ended_at")
-        return sub.ended_at.strftime("%Y년 %m월 %d일")
+
+        sub = self.active_subscription()
+        if not sub:
+            raise Exception("Membership is active but there is no active subscription!")
+        return sub.ended_at
 
     def total_membership_days(self) -> int:
         cur_datetime = timezone.now()

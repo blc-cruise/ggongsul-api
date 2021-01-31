@@ -5,4 +5,3 @@ class SlackAlertLevel(Enum):
     INFO = "good"
     WARNING = "warning"
     DANGER = "danger"
-    GOOGLE = "#009ef3"

@@ -31,6 +31,7 @@ class Membership(models.Model):
 
     last_activated_at = models.DateTimeField(null=True, verbose_name=_("최근 활성화 날짜"))
     last_deactivated_at = models.DateTimeField(null=True, verbose_name=_("최근 비활성화 날짜"))
+    last_renewed_at = models.DateTimeField(null=True, verbose_name=_("최근 구독 갱신 날짜"))
 
     created_on = models.DateTimeField(auto_now_add=True, verbose_name=_("생성 날짜"))
     updated_on = models.DateTimeField(auto_now=True, verbose_name=_("최근 정보 변경 날짜"))
@@ -75,17 +76,38 @@ class Membership(models.Model):
         self.last_activated_at = cur_datetime
         self.save()
 
+    @transaction.atomic
+    def renew_subscription(self):
+        cur_datetime = timezone.now()
+
+        old_subscription = self.member.subscriptions.latest("-ended_at")
+        new_subscription = Subscription.create_subscription(
+            member=self.member, started_at=cur_datetime
+        )
+
+        # 이전 구독에서 혜택을 받았다면 결제를 진행한다.
+        if old_subscription.has_visitation_records():
+            Payment.create_payment(
+                subscription=new_subscription,
+                name="꽁술 멤버십 구독 결제",
+                amount=Membership.MEMBERSHIP_PRICE,
+                billing_key=self.member.billing_key,
+            )
+
+        self.last_renewed_at = cur_datetime
+        self.save()
+
     def process_unsubscribe(self):
         cur_datetime = timezone.now()
-        latest_subscription = self.member.subscriptions.latest("-ended_at")
 
+        # latest_subscription = self.member.subscriptions.latest("-ended_at")
         # 환불 정책
-        if (
-            not latest_subscription.has_visitation_records()
-            and latest_subscription.is_in_refund_validity_days()
-            and hasattr(latest_subscription, "payment")
-        ):
-            latest_subscription.payment.cancel_payment("멤버십 구독 취소 환불 정책에 따른 환불")
+        # if (
+        #     not latest_subscription.has_visitation_records()
+        #     and latest_subscription.is_in_refund_validity_days()
+        #     and hasattr(latest_subscription, "payment")
+        # ):
+        #     latest_subscription.payment.cancel_payment("멤버십 구독 취소 환불 정책에 따른 환불")
 
         self.is_active = False
         self.last_deactivated_at = cur_datetime
@@ -93,7 +115,7 @@ class Membership(models.Model):
 
 
 class Subscription(models.Model):
-    DEFAULT_VALIDITY_DAYS = 30
+    DEFAULT_VALIDITY_DAYS = 31
     REFUND_VALIDITY_DAYS = 7
 
     member = models.ForeignKey(
@@ -101,9 +123,6 @@ class Subscription(models.Model):
         related_name="subscriptions",
         on_delete=models.CASCADE,
         verbose_name=_("사용자"),
-    )
-    validity_days = models.IntegerField(
-        default=DEFAULT_VALIDITY_DAYS, verbose_name=_("구독 유효 기간(일수)")
     )
     started_at = models.DateTimeField(verbose_name=_("구독 혜택 시작 날짜"))
     ended_at = models.DateTimeField(verbose_name=_("구독 혜택 종료 날짜"))
@@ -128,6 +147,11 @@ class Subscription(models.Model):
     payment_yn.short_description = _("결제 여부")
     payment_yn.boolean = True
 
+    def validity_days(self) -> int:
+        return (self.ended_at - self.started_at).days
+
+    validity_days.short_description = _("구독 유효 기간(일수)")
+
     @classmethod
     def create_subscription(
         cls,
@@ -139,12 +163,13 @@ class Subscription(models.Model):
         if not validity_days:
             validity_days = cls.DEFAULT_VALIDITY_DAYS
         if not ended_at:
-            ended_at = started_at + timedelta(days=validity_days)
+            ended_at = (started_at + timedelta(days=validity_days)).replace(
+                hour=23, minute=59, second=59, microsecond=0
+            )
 
         return cls.objects.create(
             member=member,
             started_at=started_at,
-            validity_days=validity_days,
             ended_at=ended_at,
         )
 

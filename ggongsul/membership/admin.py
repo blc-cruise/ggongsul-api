@@ -18,13 +18,11 @@ class MembershipInline(admin.StackedInline):
 class PaymentInline(admin.StackedInline):
     model = Payment
     extra = 0
+    readonly_fields = ("paid_at", "canceled_at")
     can_delete = False
 
 
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
     inlines = (PaymentInline,)
-    list_display = (
-        "__str__",
-        "payment_yn",
-    )
+    list_display = ("__str__", "payment_yn", "validity_days")

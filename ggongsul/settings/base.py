@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 import os
+
 from datetime import timedelta
+from kombu import Queue
 
 from pathlib import Path
 from django.contrib.admin import AdminSite
@@ -43,6 +45,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "ckeditor",
     "django_filters",
+    "django_celery_beat",
     "ggongsul.member",
     "ggongsul.partner",
     "ggongsul.agreement",
@@ -188,3 +191,16 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
 }
+
+# Celery base Settings
+CELERY_TIMEZONE = "Asia/Seoul"
+CELERY_ENABLE_UTC = False
+CELERY_TASK_QUEUES = {
+    Queue("tasks.slow", routing_key="slow_task.#"),
+    Queue("tasks.fast", routing_key="fast_task.#"),
+}
+CELERY_TASK_DEFAULT_QUEUE = "tasks.fast"
+CELERY_TASK_ROUTES = {"ggongsul.membership.tasks.check_expire_membership": "tasks.slow"}
+
+# Celery Beat base Settings
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"

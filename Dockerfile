@@ -12,6 +12,9 @@ ENV PYTHONUNBUFFERED=1 APP_ENV=${APP_ENV}
 
 RUN bash -c "if [ ${APP_ENV} == 'development' ] ; then poetry install --no-root ; else poetry install --no-root --no-dev ; fi"
 
+WORKDIR /app
+ENTRYPOINT ["/app/bin/docker-entrypoint"]
+
 FROM python:3.9-slim as prod
 
 LABEL maintainer="jaegeon <zezaeoh@gmail.com>"

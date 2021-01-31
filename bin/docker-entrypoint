@@ -4,6 +4,32 @@ if [[ $1 = 'bash' ]]; then
     exec /bin/bash
 fi
 
+# for scheduler process
+if [[ $1 = 'scheduler' ]]; then
+  [[ -f celerybeat.pid ]] && rm celerybeat.pid
+  exec celery -A ggongsul beat
+fi
+
+# for fast worker process
+if [[ $1 = 'fast-worker' ]]; then
+  exec celery -A ggongsul worker \
+     -l info \
+     --soft-time-limit=200 \
+     --concurrency=2 \
+     -Q tasks.fast \
+     -n fast-worker.%n
+fi
+
+# for slow worker process
+if [[ $1 = 'slow-worker' ]]; then
+  exec celery -A ggongsul worker \
+     -l info \
+     --soft-time-limit=3000 \
+     --concurrency=1 \
+     -Q tasks.slow \
+     -n slow-worker.%n
+fi
+
 if [[ "$APP_ENV" = "development" ]]; then
     python manage.py collectstatic --no-input
     exec python manage.py runserver 0.0.0.0:8000

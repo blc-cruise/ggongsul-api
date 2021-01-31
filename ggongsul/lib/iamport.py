@@ -46,9 +46,6 @@ class IMPHelper:
         else:
             raise exceptions.CommError("Not allowed Method!")
 
-        if res.status_code == status.HTTP_400_BAD_REQUEST:
-            raise exceptions.InvalidArgumentError("잘못된 KAKAO code 인증입니다!")
-
         if res.status_code == status.HTTP_401_UNAUTHORIZED:
             self._update_auth_token()
             res = self._request(
