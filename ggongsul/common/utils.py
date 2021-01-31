@@ -10,7 +10,8 @@ from .enums import SlackAlertLevel
 from ..core.decorators import exponential_backoff_retry
 
 logger = logging.getLogger(__name__)
-slack = WebhookClient(url=settings.SLACK_WEBHOOK_URL)
+slack_info = WebhookClient(url=settings.SLACK_INFO_WEBHOOK_URL)
+slack_error = WebhookClient(url=settings.SLACK_ERROR_WEBHOOK_URL)
 
 
 def logging_traceback():
@@ -30,6 +31,11 @@ def send_slack_msg(
 ):
     if isinstance(alert_level, SlackAlertLevel):
         alert_level = alert_level.value
+
+    if alert_level == SlackAlertLevel.INFO.value:
+        slack = slack_info
+    else:
+        slack = slack_error
 
     if attachments:
         slack.send(

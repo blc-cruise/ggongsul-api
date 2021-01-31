@@ -11,7 +11,45 @@ services:
       APP_ENV: development
     volumes:
       - .:/app
-    working_dir: /app
     ports:
       - 8000:8000
     command: "/app/bin/docker-entrypoint"
+  queue:
+    image: rabbitmq:3.8.9
+    container_name: ggongsul-queue
+    environment:
+      RABBITMQ_DEFAULT_USER: root
+      RABBITMQ_DEFAULT_PASS: iloveggongsul
+    ports:
+      - 5672:5672
+      - 15672:15672
+  scheduler:
+    image: zezaeoh/ggongsul-api:dev
+    container_name: ggongsul-scheduler
+    environment:
+      APP_ENV: development
+    volumes:
+      - .:/app
+    command: "scheduler"
+    depends_on:
+      - queue
+  fast-worker:
+    image: zezaeoh/ggongsul-api:dev
+    container_name: ggongsul-fast-worker
+    environment:
+      APP_ENV: development
+    volumes:
+      - .:/app
+    command: "fast-worker"
+    depends_on:
+      - queue
+  slow-worker:
+    image: zezaeoh/ggongsul-api:dev
+    container_name: ggongsul-slow-worker
+    environment:
+      APP_ENV: development
+    volumes:
+      - .:/app
+    command: "slow-worker"
+    depends_on:
+      - queue

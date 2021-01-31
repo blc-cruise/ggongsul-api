@@ -36,6 +36,9 @@ class LoginSerializer(APISerializer):
         except SocialAccount.DoesNotExist:
             raise AuthenticationFailed(_("해당 uid로 가입된 멤버가 없습니다."))
 
+        if not sa.member.is_active:
+            raise AuthenticationFailed(_("탈퇴한 멤버입니다."))
+
         return sa.member.process_login()
 
 
@@ -126,6 +129,28 @@ class CheckUsernameSerializer(APISerializer):
 
 
 class MemberSerializer(serializers.ModelSerializer):
+    next_membership_payment = serializers.SerializerMethodField()
+    start_subscription_date = serializers.SerializerMethodField()
+    end_subscription_date = serializers.SerializerMethodField()
+
+    def get_next_membership_payment(self, obj: Member):
+        np = obj.next_membership_payment()
+        if not np:
+            return None
+        return np.strftime("%Y년 %m월 %d일")
+
+    def get_start_subscription_date(self, obj: Member):
+        sub = obj.active_subscription()
+        if not sub:
+            return None
+        return sub.started_at.strftime("%Y년 %m월 %d일")
+
+    def get_end_subscription_date(self, obj: Member):
+        sub = obj.active_subscription()
+        if not sub:
+            return None
+        return sub.ended_at.strftime("%Y년 %m월 %d일")
+
     class Meta:
         model = Member
         fields = [
@@ -135,4 +160,6 @@ class MemberSerializer(serializers.ModelSerializer):
             "total_membership_days",
             "total_visitation_cnt",
             "next_membership_payment",
+            "start_subscription_date",
+            "end_subscription_date",
         ]

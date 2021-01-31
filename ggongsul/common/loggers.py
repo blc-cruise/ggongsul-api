@@ -5,6 +5,8 @@ from copy import copy
 from django.conf import settings
 from django.utils.log import AdminEmailHandler
 from django.views.debug import ExceptionReporter
+
+from .enums import SlackAlertLevel
 from .utils import send_slack_msg
 
 
@@ -117,6 +119,5 @@ class SlackExceptionHandler(AdminEmailHandler):
         )
 
         send_slack_msg(
-            title=main_text,
-            attachments=attachments,
+            title=main_text, attachments=attachments, alert_level=SlackAlertLevel.DANGER
         )

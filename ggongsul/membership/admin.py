@@ -18,6 +18,7 @@ class MembershipInline(admin.StackedInline):
 class PaymentInline(admin.StackedInline):
     model = Payment
     extra = 0
+    readonly_fields = ("paid_at", "canceled_at")
     can_delete = False
 
 
