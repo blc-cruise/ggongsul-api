@@ -156,6 +156,7 @@ class MemberSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "username",
+            "has_membership_benefits",
             "is_membership_activated",
             "total_membership_days",
             "total_visitation_cnt",
