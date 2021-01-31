@@ -62,8 +62,8 @@ class MemberViewSet(GenericViewSet):
         serializer = self.get_serializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(detail=False, methods=["delete"], url_path="me")
-    def delete_me_info(self, request: Request):
+    @action(detail=False, methods=["post"], url_path="me/deactivate")
+    def deactivate_me_info(self, request: Request):
         me: Member = request.user
         me.is_active = False
         me.save()

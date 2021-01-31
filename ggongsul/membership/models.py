@@ -102,9 +102,6 @@ class Subscription(models.Model):
         on_delete=models.CASCADE,
         verbose_name=_("사용자"),
     )
-    validity_days = models.IntegerField(
-        default=DEFAULT_VALIDITY_DAYS, verbose_name=_("구독 유효 기간(일수)")
-    )
     started_at = models.DateTimeField(verbose_name=_("구독 혜택 시작 날짜"))
     ended_at = models.DateTimeField(verbose_name=_("구독 혜택 종료 날짜"))
 
@@ -128,6 +125,11 @@ class Subscription(models.Model):
     payment_yn.short_description = _("결제 여부")
     payment_yn.boolean = True
 
+    def validity_days(self) -> int:
+        return (self.ended_at - self.started_at).days
+
+    validity_days.short_description = _("구독 유효 기간(일수)")
+
     @classmethod
     def create_subscription(
         cls,
@@ -139,12 +141,13 @@ class Subscription(models.Model):
         if not validity_days:
             validity_days = cls.DEFAULT_VALIDITY_DAYS
         if not ended_at:
-            ended_at = started_at + timedelta(days=validity_days)
+            ended_at = (started_at + timedelta(days=validity_days)).replace(
+                hour=23, minute=59, second=59, microsecond=0
+            )
 
         return cls.objects.create(
             member=member,
             started_at=started_at,
-            validity_days=validity_days,
             ended_at=ended_at,
         )
 
