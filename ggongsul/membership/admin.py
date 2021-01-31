@@ -24,6 +24,7 @@ class PaymentInline(admin.StackedInline):
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
     inlines = (PaymentInline,)
+    readonly_fields = ("validity_days",)
     list_display = (
         "__str__",
         "payment_yn",
