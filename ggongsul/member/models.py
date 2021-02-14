@@ -45,7 +45,7 @@ class Member(AbstractUser):
     def active_subscription(self):
         cur_datetime = timezone.now()
         try:
-            sub = self.subscriptions.latest("-ended_at")
+            sub = self.subscriptions.latest("ended_at")
         except models.ObjectDoesNotExist:
             return None
 

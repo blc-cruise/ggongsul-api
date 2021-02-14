@@ -20,7 +20,8 @@ class VisitationViewSet(
     mixins.ListModelMixin,
     GenericViewSet,
 ):
-    queryset = Visitation.objects.all()
+    # partner정보가 남아있는 것을 기준으로 넘겨준다.
+    queryset = Visitation.objects.filter(partner__isnull=False)
     filter_backends = [MemberFilterBackend, DjangoFilterBackend]
     filterset_fields = ["partner"]
     pagination_class = SmallResultsSetPagination
