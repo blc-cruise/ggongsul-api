@@ -78,7 +78,21 @@ class SignupSerializer(APISerializer):
             raise ValidationError(msg)
 
         if SocialAccount.objects.filter(provider=signup_type, uid=uid).exists():
-            raise ValidationError(_("해당 소셜 계정으로 가입한 멤버가 존재합니다."))
+
+            # 해당 소셜 계정이 active하면
+            if SocialAccount.objects.filter(provider=signup_type, uid=uid).last().member.is_active:
+                raise ValidationError(_("해당 소셜 계정으로 가입한 멤버가 존재합니다."))
+
+            # 해당 소셜 계정이 deactive하면 기존 정보를 update시킨다.
+            m = self._update_social_account_member(
+                username=attrs["username"],
+                channel_in=attrs["channel_in"],
+                uid=uid,
+                provider=signup_type,
+                adv_agree_yn=attrs["adv_agree_yn"],
+            )
+
+            return m.process_login()
 
         m = self._create_social_account_member(
             username=attrs["username"],
@@ -119,6 +133,38 @@ class SignupSerializer(APISerializer):
         m.detail.save()
         m.agreement.save()
         m.save()
+        return m
+
+    def _update_social_account_member(
+        self,
+        username: str,
+        channel_in: MemberDetail.ChannelIn,
+        provider: SocialAccount.Provider,
+        uid: str,
+        adv_agree_yn: bool,
+    ):
+
+        m = SocialAccount.objects.filter(provider=provider, uid=uid).last().member
+        cur_datetime = timezone.now()
+
+        # username 변경
+        m.username = username
+        m.is_active = True
+        # add member detail
+        m.detail.channel_in = channel_in
+
+        # add member agreement
+        m.agreement.policy_agreed_at = cur_datetime
+        m.agreement.privacy_agreed_at = cur_datetime
+        if adv_agree_yn:
+            m.agreement.adv_agreed_yn = adv_agree_yn
+            m.agreement.adv_agreed_at = cur_datetime
+
+        # save related objects
+        m.detail.save()
+        m.agreement.save()
+        m.save()
+
         return m
 
 

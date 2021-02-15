@@ -67,7 +67,7 @@ class Membership(models.Model):
         else:
             Payment.create_payment(
                 subscription=sub,
-                name="꽁술 멤버십 구독 결제",
+                name="{} 결제".format(str(sub)),
                 amount=Membership.MEMBERSHIP_PRICE,
                 billing_key=self.member.billing_key,
             )
@@ -89,7 +89,7 @@ class Membership(models.Model):
         if old_subscription.has_visitation_records():
             Payment.create_payment(
                 subscription=new_subscription,
-                name="꽁술 멤버십 구독 결제",
+                name="{} 결제".format(str(new_subscription)),
                 amount=Membership.MEMBERSHIP_PRICE,
                 billing_key=self.member.billing_key,
             )
@@ -100,7 +100,7 @@ class Membership(models.Model):
     def process_unsubscribe(self):
         cur_datetime = timezone.now()
 
-        # latest_subscription = self.member.subscriptions.latest("-ended_at")
+        # latest_subscription = self.member.subscriptions.latest("ended_at")
         # 환불 정책
         # if (
         #     not latest_subscription.has_visitation_records()
