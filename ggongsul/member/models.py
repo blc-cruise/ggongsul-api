@@ -1,9 +1,14 @@
+from __future__ import annotations
+
+import os
+import uuid
 from datetime import datetime
 from typing import Tuple, Optional
 
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from django.db import models
+from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext_lazy as _
 
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -11,6 +16,19 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from ggongsul.core import exceptions
 from ggongsul.lib.iamport import IMPHelper
 from ggongsul.lib.kakao import KakaoLoginHelper
+
+
+@deconstructible
+class PathAndRename:
+    def __init__(self, sub_path):
+        self.path = sub_path
+
+    def __call__(self, instance: MemberProfileImage, filename: str):
+        ext = filename.split(".")[-1]  # eg: 'jpg'
+        uid = uuid.uuid4().hex[:10]  # eg: '567ae32f97'
+
+        renamed_filename = f"{uid}.{ext}"
+        return os.path.join(self.path, renamed_filename)
 
 
 class Member(AbstractUser):
@@ -45,7 +63,7 @@ class Member(AbstractUser):
     def active_subscription(self):
         cur_datetime = timezone.now()
         try:
-            sub = self.subscriptions.latest("-ended_at")
+            sub = self.subscriptions.latest("ended_at")
         except models.ObjectDoesNotExist:
             return None
 
@@ -121,7 +139,7 @@ class MemberDetail(models.Model):
         ETC = 5, _("기타")
 
     member = models.OneToOneField(
-        Member, on_delete=models.CASCADE, related_name="detail", verbose_name=_("멤버")
+        Member, on_delete=models.CASCADE, related_name="detail", verbose_name=_("사용자")
     )
     channel_in = models.IntegerField(
         choices=ChannelIn.choices, default=ChannelIn.ETC, verbose_name=_("유입 채널")
@@ -138,12 +156,36 @@ class MemberDetail(models.Model):
         verbose_name_plural = _("사용자 상세 정보")
 
 
+class MemberProfileImage(models.Model):
+    member = models.OneToOneField(
+        Member,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="profile_image",
+        verbose_name=_("사용자"),
+    )
+    image = models.ImageField(
+        upload_to=PathAndRename("/image/member/"),
+        verbose_name=_("사용자 프로필 사진"),
+    )
+
+    def __str__(self):
+        return f"프로필 사진 {self.id}"
+
+    def __repr__(self):
+        return f"<MemberProfileImage: {self.__str__()}>"
+
+    class Meta:
+        verbose_name = _("사용자 프로필 사진")
+        verbose_name_plural = _("사용자 프로필 사진")
+
+
 class MemberAgreement(models.Model):
     member = models.OneToOneField(
         Member,
         on_delete=models.CASCADE,
         related_name="agreement",
-        verbose_name=_("동의서"),
+        verbose_name=_("사용자"),
     )
     policy_agreed_at = models.DateTimeField(null=True, verbose_name=_("이용약관 동의 날짜"))
     privacy_agreed_at = models.DateTimeField(null=True, verbose_name=_("개인정보 이용 동의 날짜"))

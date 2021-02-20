@@ -81,7 +81,8 @@ class PartnerDetailView(APIView):
                 data={"policy_agree_yn": "policy_agree_yn" in request.data}
             )
 
-        detail_serializer = PartnerDetailSerializer(partner_detail, data=request.data)
+        not_blank_data = {k: v for k, v in request.data.items() if v}
+        detail_serializer = PartnerDetailSerializer(partner_detail, data=not_blank_data)
 
         agreement_is_valid = True
         detail_is_valid = detail_serializer.is_valid()

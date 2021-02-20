@@ -147,7 +147,12 @@ class PostShortInfoSerializer(serializers.ModelSerializer):
 
 
 class PostDetailInfoSerializer(PostShortInfoSerializer):
-    comments = CommentInfoSerializer(read_only=True, many=True)
+    comments = serializers.SerializerMethodField()
+
+    def get_comments(self, obj: Post):
+        return CommentInfoSerializer(
+            obj.comments.filter(is_deleted=False), many=True
+        ).data
 
     class Meta:
         model = Post

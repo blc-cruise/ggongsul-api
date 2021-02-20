@@ -15,6 +15,10 @@ print("loading: env_development.json")
 # MEDIA_ROOT = "/"
 
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+# default image url of members
+DEFAULT_PROFILE_IMAGE_URL = (
+    "https://ggongsul-test.s3.amazonaws.com/image/member/7106492978.jpg"
+)
 
 AWS_ACCESS_KEY_ID = ENV_CONFIG["aws"]["access_key_id"]
 AWS_SECRET_ACCESS_KEY = ENV_CONFIG["aws"]["secret_access_key_id"]

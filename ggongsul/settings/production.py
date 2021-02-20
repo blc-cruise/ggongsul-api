@@ -14,6 +14,10 @@ ENV_CONFIG = json.loads(open(ENV_CONFIG_FILE).read())
 print("loading: env_production.json")
 
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+# default image url of members
+DEFAULT_PROFILE_IMAGE_URL = (
+    "https://ggongsul-test.s3.amazonaws.com/image/member/7106492978.jpg"
+)
 
 LOGGING["loggers"]["ggongsul"]["level"] = "INFO"
 
