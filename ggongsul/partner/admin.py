@@ -89,5 +89,3 @@ class PartnerAdmin(admin.ModelAdmin):
     # 등록된 파트 정보는 admin에서 삭제할 수 없도록 처리
     def has_delete_permission(self, request, obj=None):
         return False
-
-

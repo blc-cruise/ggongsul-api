@@ -9,6 +9,7 @@ class MembershipInline(admin.StackedInline):
     readonly_fields = (
         "last_activated_at",
         "last_deactivated_at",
+        "last_renewed_at",
         "created_on",
         "updated_on",
     )
