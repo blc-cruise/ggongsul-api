@@ -52,5 +52,7 @@ class MemberAdmin(UserAdmin):
         "is_staff",
         "is_membership_activated",
         "has_membership_benefits",
+        "date_joined",
     )
+    list_filter = ("is_staff", "is_superuser", "is_active", "groups", "date_joined")
     search_fields = ("username", "email")

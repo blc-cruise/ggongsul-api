@@ -28,6 +28,9 @@ AWS_QUERYSTRING_AUTH = False
 
 SLACK_INFO_WEBHOOK_URL = ENV_CONFIG["slack"]["info_webhook"]
 SLACK_ERROR_WEBHOOK_URL = ENV_CONFIG["slack"]["error_webhook"]
+SLACK_JOIN_WEBHOOK_URL = ENV_CONFIG["slack"]["join_webhook"]
+SLACK_MEMBERSHIP_WEBHOOK_URL = ENV_CONFIG["slack"]["membership_webhook"]
+SLACK_VISIT_WEBHOOK_URL = ENV_CONFIG["slack"]["visit_webhook"]
 
 KAKAO_REST_API_KEY = ENV_CONFIG["kakao"]["rest_api_key"]
 KAKAO_API_CLIENT_SECRET = ENV_CONFIG["kakao"]["client_secret"]

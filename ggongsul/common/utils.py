@@ -28,11 +28,14 @@ def send_slack_msg(
     fields: typing.Union[list, dict] = None,
     attachments: typing.List[dict] = None,
     alert_level: typing.Union[str, SlackAlertLevel] = SlackAlertLevel.INFO,
+    slack_client: WebhookClient = None,
 ):
     if isinstance(alert_level, SlackAlertLevel):
         alert_level = alert_level.value
 
-    if alert_level == SlackAlertLevel.INFO.value:
+    if slack_client:
+        slack = slack_client
+    elif alert_level == SlackAlertLevel.INFO.value:
         slack = slack_info
     else:
         slack = slack_error

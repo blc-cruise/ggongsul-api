@@ -127,7 +127,11 @@ class Member(AbstractUser):
         self.update_last_login()
         token = self.create_refresh_token()
 
-        return {"refresh": str(token), "access": str(token.access_token)}
+        return {
+            "id": self.id,
+            "refresh": str(token),
+            "access": str(token.access_token),
+        }
 
 
 class MemberDetail(models.Model):

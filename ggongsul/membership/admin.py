@@ -26,4 +26,5 @@ class PaymentInline(admin.StackedInline):
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
     inlines = (PaymentInline,)
-    list_display = ("__str__", "payment_yn", "validity_days")
+    list_display = ("__str__", "payment_yn", "validity_days", "started_at", "ended_at")
+    list_filter = ("started_at", "ended_at")

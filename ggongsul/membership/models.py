@@ -1,14 +1,21 @@
 from __future__ import annotations
 
 import secrets
+import threading
 from datetime import datetime, timedelta
 
+from django.conf import settings
 from django.db import models, transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from slack_sdk import WebhookClient
 
+from ggongsul.common.utils import send_slack_msg
 from ggongsul.lib.iamport import IMPHelper
 from ggongsul.member.models import Member
+
+
+slack = WebhookClient(url=settings.SLACK_MEMBERSHIP_WEBHOOK_URL)
 
 
 class Membership(models.Model):
@@ -80,7 +87,7 @@ class Membership(models.Model):
     def renew_subscription(self):
         cur_datetime = timezone.now()
 
-        old_subscription = self.member.subscriptions.latest("-ended_at")
+        old_subscription = self.member.subscriptions.latest("ended_at")
         new_subscription = Subscription.create_subscription(
             member=self.member, started_at=cur_datetime
         )
