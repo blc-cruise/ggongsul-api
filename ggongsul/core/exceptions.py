@@ -11,7 +11,7 @@ class ERROR(Exception):
         return f"{self.__class__.__name__}: {self.text}"
 
     def __repr__(self):
-        return self.__str__()
+        return f"<{self.__str__()}>"
 
 
 class InvalidArgumentError(ERROR):

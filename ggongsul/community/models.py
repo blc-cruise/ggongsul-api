@@ -45,9 +45,6 @@ class Post(models.Model):
     created_on = models.DateTimeField(auto_now_add=True, verbose_name=_("생성 날짜"))
     updated_on = models.DateTimeField(auto_now=True, verbose_name=_("최근 정보 변경 날짜"))
 
-    def __repr__(self):
-        return self.__str__()
-
     def __str__(self):
         return f"{self.member.username} 의 포스트 {self.id}"
 
@@ -88,9 +85,6 @@ class PostImage(models.Model):
     def __str__(self):
         return self.image.url
 
-    def __repr__(self):
-        return self.__str__()
-
 
 class Comment(models.Model):
     post = models.ForeignKey(
@@ -112,9 +106,6 @@ class Comment(models.Model):
 
     created_on = models.DateTimeField(auto_now_add=True, verbose_name=_("생성 날짜"))
     updated_on = models.DateTimeField(auto_now=True, verbose_name=_("최근 정보 변경 날짜"))
-
-    def __repr__(self):
-        return self.__str__()
 
     def __str__(self):
         return f"{self.member.username} 의 포스트 {self.post.id} 의 댓글 {self.id}"

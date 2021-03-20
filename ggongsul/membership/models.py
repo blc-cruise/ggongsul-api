@@ -43,9 +43,6 @@ class Membership(models.Model):
     created_on = models.DateTimeField(auto_now_add=True, verbose_name=_("생성 날짜"))
     updated_on = models.DateTimeField(auto_now=True, verbose_name=_("최근 정보 변경 날짜"))
 
-    def __repr__(self):
-        return self.__str__()
-
     def __str__(self):
         return f"{self.member.username} 의 멤버십"
 
@@ -137,9 +134,6 @@ class Subscription(models.Model):
     created_on = models.DateTimeField(auto_now_add=True, verbose_name=_("생성 날짜"))
     updated_on = models.DateTimeField(auto_now=True, verbose_name=_("최근 정보 변경 날짜"))
 
-    def __repr__(self):
-        return self.__str__()
-
     def __str__(self):
         return f"{self.member.username} 의 {self.started_at.month} 월 구독"
 
@@ -219,9 +213,6 @@ class Payment(models.Model):
 
     created_on = models.DateTimeField(auto_now_add=True, verbose_name=_("생성 날짜"))
     updated_on = models.DateTimeField(auto_now=True, verbose_name=_("최근 정보 변경 날짜"))
-
-    def __repr__(self):
-        return self.__str__()
 
     def __str__(self):
         return f"{str(self.subscription)} 의 결제 정보"

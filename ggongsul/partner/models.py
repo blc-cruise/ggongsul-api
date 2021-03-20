@@ -60,9 +60,6 @@ class Partner(models.Model):
     def __str__(self):
         return self.name
 
-    def __repr__(self):
-        return self.__str__()
-
     def avg_review_rating(self) -> float:
         aggregated = self.reviews.all().aggregate(Avg("rating_score"))[
             "rating_score__avg"
@@ -104,9 +101,6 @@ class PartnerCategory(models.Model):
 
     def __str__(self):
         return self.name
-
-    def __repr__(self):
-        return self.__str__()
 
     class Meta:
         verbose_name = _("업체 분류")
@@ -284,9 +278,6 @@ class PartnerDetail(models.Model):
     def __str__(self):
         return self.partner.name + " 상세 정보"
 
-    def __repr__(self):
-        return self.__str__()
-
 
 class PartnerAgreement(models.Model):
     partner = models.OneToOneField(
@@ -308,6 +299,3 @@ class PartnerAgreement(models.Model):
 
     def __str__(self):
         return self.partner.name + " 이용약관 동의서"
-
-    def __repr__(self):
-        return self.__str__()

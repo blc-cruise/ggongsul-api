@@ -72,9 +72,6 @@ class Review(models.Model):
     def __str__(self):
         return f"{self.member} 의 {self.partner} 업체 리뷰 {self.id}"
 
-    def __repr__(self):
-        return self.__str__()
-
 
 class ReviewImage(models.Model):
     review = models.ForeignKey(
@@ -94,6 +91,3 @@ class ReviewImage(models.Model):
 
     def __str__(self):
         return self.image.url
-
-    def __repr__(self):
-        return self.__str__()

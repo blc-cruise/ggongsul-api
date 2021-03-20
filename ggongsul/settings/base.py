@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "ckeditor",
+    "rangefilter",
     "django_filters",
     "django_celery_beat",
     "ggongsul.member",

@@ -30,9 +30,6 @@ class Visitation(models.Model):
             return True
         return False
 
-    def __repr__(self):
-        return self.__str__()
-
     def __str__(self):
         return f"{self.member} 의 {self.partner} 방문 기록 {self.id}"
 

@@ -66,6 +66,9 @@ class SignupSerializer(APISerializer):
     profile_image = serializers.PrimaryKeyRelatedField(
         queryset=MemberProfileImage.objects.all(), allow_null=True
     )
+    recommended_place = serializers.CharField(
+        max_length=150, required=False, allow_blank=True, allow_null=True
+    )
 
     def validate_policy_agree_yn(self, value: bool):
         if not value:
@@ -92,6 +95,10 @@ class SignupSerializer(APISerializer):
         if profile_image and profile_image.member_id:
             raise ValidationError(_("이미 다른 멤버가 사용중인 프로필 사진입니다."))
 
+        recommended_place: Optional[str] = attrs.get("recommended_place", None)
+        if recommended_place:
+            pass
+
         if SocialAccount.objects.filter(provider=signup_type, uid=uid).exists():
 
             # 해당 소셜 계정이 active하면
@@ -109,6 +116,8 @@ class SignupSerializer(APISerializer):
                 uid=uid,
                 provider=signup_type,
                 adv_agree_yn=attrs["adv_agree_yn"],
+                profile_image=profile_image,
+                recommended_place=attrs.get("recommended_place", None),
             )
 
             return m.process_login()
@@ -120,6 +129,7 @@ class SignupSerializer(APISerializer):
             provider=signup_type,
             adv_agree_yn=attrs["adv_agree_yn"],
             profile_image=profile_image,
+            recommended_place=attrs.get("recommended_place", None),
         )
         return m.process_login()
 
@@ -132,6 +142,7 @@ class SignupSerializer(APISerializer):
         uid: str,
         adv_agree_yn: bool,
         profile_image: Optional[MemberProfileImage] = None,
+        recommended_place: Optional[str] = None,
     ):
         # create member
         m: Member = Member.objects.create_user(
@@ -142,6 +153,7 @@ class SignupSerializer(APISerializer):
 
         # add member detail
         m.detail.channel_in = channel_in
+        m.detail.recommended_place = recommended_place
 
         # add member agreement
         m.agreement.policy_agreed_at = cur_datetime
@@ -169,6 +181,7 @@ class SignupSerializer(APISerializer):
         uid: str,
         adv_agree_yn: bool,
         profile_image: Optional[MemberProfileImage] = None,
+        recommended_place: Optional[str] = None,
     ):
         m = SocialAccount.objects.filter(provider=provider, uid=uid).last().member
         cur_datetime = timezone.now()
@@ -178,6 +191,7 @@ class SignupSerializer(APISerializer):
         m.is_active = True
         # add member detail
         m.detail.channel_in = channel_in
+        m.detail.recommended_place = recommended_place
 
         # add member agreement
         m.agreement.policy_agreed_at = cur_datetime
@@ -199,7 +213,6 @@ class SignupSerializer(APISerializer):
         m.detail.save()
         m.agreement.save()
         m.save()
-
         return m
 
 

@@ -148,12 +148,12 @@ class MemberDetail(models.Model):
     channel_in = models.IntegerField(
         choices=ChannelIn.choices, default=ChannelIn.ETC, verbose_name=_("유입 채널")
     )
+    recommended_place = models.CharField(
+        max_length=150, null=True, verbose_name=_("추천 장소")
+    )
 
     def __str__(self):
         return self.member.username + " 상세 정보"
-
-    def __repr__(self):
-        return self.__str__()
 
     class Meta:
         verbose_name = _("사용자 상세 정보")
@@ -175,9 +175,6 @@ class MemberProfileImage(models.Model):
 
     def __str__(self):
         return f"프로필 사진 {self.id}"
-
-    def __repr__(self):
-        return f"<MemberProfileImage: {self.__str__()}>"
 
     class Meta:
         verbose_name = _("사용자 프로필 사진")
@@ -206,9 +203,6 @@ class MemberAgreement(models.Model):
     def __str__(self):
         return self.member.username + " 이용약관 동의서"
 
-    def __repr__(self):
-        return self.__str__()
-
 
 class SocialAccount(models.Model):
     class Provider(models.TextChoices):
@@ -232,9 +226,6 @@ class SocialAccount(models.Model):
 
     def __str__(self):
         return self.member.username + " 소셜 계정 정보"
-
-    def __repr__(self):
-        return self.__str__()
 
     @staticmethod
     def is_valid_social_account(
