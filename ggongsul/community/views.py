@@ -18,7 +18,7 @@ from ggongsul.community.serializers import (
     CommentInfoSerializer,
     PostImageSerializer,
 )
-from ggongsul.core.filters import DistanceFilterBackend, PostFilterBackend
+from ggongsul.core.filters import PostFilterBackend
 from ggongsul.core.paginations import SmallResultsSetPagination
 from ggongsul.core.permissions import IsObjectOwnerMember
 
@@ -31,7 +31,7 @@ class PostViewSet(ModelViewSet):
     @property
     def filter_backends(self):
         if self.action == "list":
-            return [DistanceFilterBackend, OrderingFilter]
+            return [OrderingFilter]
         return []
 
     @property
