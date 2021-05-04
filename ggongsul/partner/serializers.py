@@ -36,10 +36,16 @@ class PartnerAgreementSerializer(serializers.Serializer):
 
 class PartnerMapInfoSerializer(serializers.ModelSerializer):
     offer_type = serializers.IntegerField(source="detail.offer_type")
+    category = serializers.SerializerMethodField()
+
+    def get_category(self, obj: Partner):
+        if obj.detail.category is None:
+            return None
+        return obj.detail.category.name
 
     class Meta:
         model = Partner
-        fields = ["id", "name", "longitude", "latitude", "offer_type"]
+        fields = ["id", "name", "longitude", "latitude", "offer_type", "category"]
 
 
 class PartnerShortInfoSerializer(serializers.ModelSerializer):
